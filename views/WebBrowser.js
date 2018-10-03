@@ -22,13 +22,6 @@ function treatTitle(str) {
     return str;
 }
 
-const entrypoints = {
-    ent: 'https://ent.u-bordeaux.fr',
-    email: 'https://webmel.u-bordeaux.fr',
-    cas: 'https://cas.u-bordeaux.fr',
-    apogee: 'https://apogee.u-bordeaux.fr',
-};
-
 class WebBrowser extends React.Component {
     static navigationOptions = ({ navigation }) => {
         let title = treatTitle(navigation.getParam('title', 'Navigateur web'));
@@ -47,20 +40,15 @@ class WebBrowser extends React.Component {
     constructor(props) {
         super(props);
 
-        let uri = 'https://uki-bordeaux.fr';
+        let uri = 'https://kbdev.io';
         if (this.props.navigation.state.params) {
-            const { entrypoint, href } = this.props.navigation.state.params;
-            if (entrypoint) {
-                if (entrypoints[entrypoint]) {
-                    uri = entrypoints[entrypoint];
-                }
-            } else if (href) {
+            const { href } = this.props.navigation.state.params;
+            if (href) {
                 uri = href;
             }
         }
 
         this.state = {
-            entrypoint: this.props.navigation.state.params.entrypoint,
             title: null,
             url: '',
             uri,
