@@ -27,22 +27,27 @@ export class About extends React.Component {
 
         return (
             <View style={{ flex: 1, backgroundColor: theme.background }}>
-                <View style={style.about.view}>
-                    <Text style={[style.about.title, { color: theme.font }]}>
+                <View style={style.About.view}>
+                    <Text style={[style.About.title, { color: theme.font }]}>
                         {Expo.Constants.manifest.name} v{Expo.Constants.manifest.version}
                     </Text>
-                    <View style={style.about.content}>
+                    <View style={style.About.content}>
                         <Text style={{ color: theme.font }}>Cette application a été développée par KBDev SARL.</Text>
                     </View>
 
-                    <Text style={[style.about.title, { color: theme.font }]}>Nous contacter</Text>
-                    <View style={style.about.content}>
-                        <URLButton url="https://kbdev.io" title="Site de l'entreprise" theme={theme}/>
+                    <Text style={[style.About.title, { color: theme.font }]}>Nous contacter</Text>
+                    <View style={style.About.content}>
+                        <URLButton url="https://kbdev.io" title="Site de l'entreprise" theme={theme} navigation={this.props.navigation}/>
                     </View>
 
-                    <Text style={[style.about.title, { color: theme.font }]}>Mentions légales</Text>
-                    <View style={style.about.content}>
-                        <URLButton url="https://ukit-bordeaux.fr/policies/privacy" title="Politique de confidentialité" theme={theme}/>
+                    <Text style={[style.About.title, { color: theme.font }]}>Mentions légales</Text>
+                    <View style={style.About.content}>
+                        <URLButton
+                            url="https://github.com/kb-dev/Talkien/blob/master/PRIVACY.md"
+                            title="Politique de confidentialité"
+                            theme={theme}
+                            navigation={this.props.navigation}
+                        />
                     </View>
                 </View>
             </View>

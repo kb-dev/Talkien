@@ -50,7 +50,7 @@ const CustomDrawerContentComponent = connect(
                         alignContent: 'center',
                         height: 120,
                     }}>
-                    <Image style={{ width: 170, height: 75, marginLeft: 8, marginTop: 16 }} source={require('./assets/icon.png')}/>
+                    <Image style={{ width: 72, height: 72, marginLeft: 8, marginTop: 16 }} source={require('./assets/icon.png')}/>
                 </View>
                 <ScrollView style={{ backgroundColor: theme.background }}>
                     <View>

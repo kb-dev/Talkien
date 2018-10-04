@@ -24,7 +24,7 @@ export default class BackButton extends React.PureComponent {
 
     render() {
         return (
-            <TouchableHighlight onPress={this._onPress} underlayColor={style.Theme.secondary} style={style.backButton}>
+            <TouchableHighlight onPress={this._onPress} underlayColor={style.Theme.secondary} style={style.BackButton}>
                 <View>
                     <Ionicons
                         name={Platform.OS === 'ios' ? 'ios-arrow-back' : 'md-arrow-back'}
