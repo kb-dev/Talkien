@@ -1,4 +1,5 @@
 import { StatusBar } from 'react-native';
+import moment from 'moment';
 
 function upperCaseFirstLetter(string) {
     let firstLetter = string[0].toUpperCase();
@@ -41,4 +42,23 @@ function isArraysEquals(a, b) {
     }
 }
 
-export { upperCaseFirstLetter, setStatusBar, isArraysEquals };
+function compareDate(a, b) {
+    let momentA = a;
+    let momentB = b;
+
+    if (typeof a === 'string') {
+        momentA = moment(a);
+    }
+    if (typeof b === 'string') {
+        momentB = moment(b);
+    }
+
+    if (momentA.isBefore(momentB)) {
+        return -1;
+    } else if (momentA.isAfter(momentB)) {
+        return 1;
+    }
+    return 0;
+}
+
+export { compareDate, upperCaseFirstLetter, setStatusBar, isArraysEquals };

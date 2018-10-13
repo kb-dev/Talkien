@@ -12,6 +12,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Split from '../components/ui/Split';
 import Event from '../components/home/Event';
 // Misc
+import { compareDate } from '../Utils';
 import style from '../Style';
 
 moment.locale('fr');
@@ -91,9 +92,12 @@ class Home extends React.Component {
         const isConnected = (await NetInfo.getConnectionInfo()) !== 'none';
         if (isConnected) {
             try {
-                const response = await axios.get('https://raw.githubusercontent.com/kb-dev/talkien-events/master/events.json');
+                const response = await axios.get('https://raw.githubusercontent.com/kb-dev/talkien-events/master/events.json', {
+                    responseType: 'json',
+                });
                 this.setState({ cacheDate: null });
                 list = response.data;
+                console.log({ list });
                 AsyncStorage.setItem('list', JSON.stringify({ list, date: moment() }));
             } catch (error) {
                 if (error.response) {
@@ -138,6 +142,7 @@ class Home extends React.Component {
         }
 
         if (list !== null) {
+            list.sort((eventA, eventB) => compareDate(eventA.startDate, eventB.startDate));
             this.setState({ list, refreshing: false });
         }
     }
