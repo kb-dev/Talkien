@@ -102,7 +102,7 @@ const Drawer = createDrawerNavigator(
     {
         navigationOptions: ({ navigation }) => setStatusBar(navigation),
         contentComponent: CustomDrawerContentComponent,
-    },
+    }
 );
 
 const { store, pStore } = configureStore();

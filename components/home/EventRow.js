@@ -8,13 +8,14 @@ import 'moment/locale/fr';
 
 moment.locale('fr');
 
-export default class Event extends React.PureComponent {
+export default class EventRow extends React.PureComponent {
     static propTypes = {
+        id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         address: PropTypes.string.isRequired,
         startDate: PropTypes.string.isRequired,
         endDate: PropTypes.string.isRequired,
-        openEvent: PropTypes.func,
+        openEvent: PropTypes.func.isRequired,
     };
 
     constructor(props) {
@@ -25,7 +26,7 @@ export default class Event extends React.PureComponent {
 
     _onPress(e) {
         requestAnimationFrame(() => {
-            console.log('click');
+            this.props.openEvent(this.props.name, this.props.id);
         });
     }
 

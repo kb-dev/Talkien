@@ -1,68 +1,40 @@
 import React from 'react';
-import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, TouchableOpacity, View } from 'react-native';
-import { connect } from 'react-redux';
-import axios from 'axios';
-import Toast from 'react-native-root-toast';
+import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, View } from 'react-native';
 import moment from 'moment';
-import 'moment/locale/fr';
-// UI
+import Toast from 'react-native-root-toast';
+import axios from 'axios';
+import { connect } from 'react-redux';
+
+import BackButton from '../components/buttons/BackButton';
+import TalkRow from '../components/event/TalkRow';
 import NavBar from '../components/ui/NavBar';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Split from '../components/ui/Split';
-import EventRow from '../components/home/EventRow';
-// Misc
-import { compareDate } from '../Utils';
 import style from '../Style';
+import Split from '../components/ui/Split';
 
-moment.locale('fr');
-
-class Home extends React.Component {
+class Group extends React.Component {
     static navigationOptions = ({ navigation }) => {
-        let title = 'Conférences';
-        let leftButton = (
-            <TouchableOpacity
-                onPress={() => {
-                    navigation.openDrawer();
-                }}
-                style={{
-                    justifyContent: 'space-around',
-                    paddingLeft: 16,
-                }}>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                    }}>
-                    <MaterialCommunityIcons
-                        name="menu"
-                        size={32}
-                        style={{
-                            color: 'white',
-                            height: 32,
-                            width: 32,
-                        }}
-                    />
-                </View>
-            </TouchableOpacity>
-        );
+        let eventName = navigation.state.params.name;
+
+        let leftButton = <BackButton backAction={navigation.goBack}/>;
 
         return {
-            title,
-            header: <NavBar title={title} leftButton={leftButton}/>,
+            title: eventName,
+            header: <NavBar title={eventName} leftButton={leftButton}/>,
         };
     };
 
     constructor(props) {
         super(props);
-
         this.state = {
+            eventName: this.props.navigation.state.params.name,
+            eventId: this.props.navigation.state.params.id,
             cacheDate: null,
             list: null,
             refreshing: false,
         };
 
+        this.openTalk = this.openTalk.bind(this);
         this.refreshList = this.refreshList.bind(this);
-        this.openEvent = this.openEvent.bind(this);
     }
 
     async componentDidMount() {
@@ -70,7 +42,7 @@ class Home extends React.Component {
     }
 
     async getCache() {
-        let cache = await AsyncStorage.getItem('list');
+        let cache = await AsyncStorage.getItem(this.state.eventId);
         if (cache !== null) {
             cache = JSON.parse(cache);
             this.setState({ cacheDate: cache.date });
@@ -85,12 +57,15 @@ class Home extends React.Component {
         const isConnected = (await NetInfo.getConnectionInfo()) !== 'none';
         if (isConnected) {
             try {
-                const response = await axios.get('https://raw.githubusercontent.com/kb-dev/talkien-events/master/events.json', {
-                    responseType: 'json',
-                });
+                const response = await axios.get(
+                    `https://raw.githubusercontent.com/kb-dev/talkien-events/master/${this.state.eventId}/events.json`,
+                    {
+                        responseType: 'json',
+                    },
+                );
                 this.setState({ cacheDate: null });
                 list = response.data;
-                AsyncStorage.setItem('list', JSON.stringify({ list, date: moment() }));
+                AsyncStorage.setItem(this.state.eventId, JSON.stringify({ list, date: moment() }));
             } catch (error) {
                 if (error.response) {
                     Toast.show(`Le serveur a répondu par une erreur ${error.response.status}`, {
@@ -134,19 +109,18 @@ class Home extends React.Component {
         }
 
         if (list !== null) {
-            list.sort((eventA, eventB) => compareDate(eventA.startDate, eventB.startDate));
             this.setState({ list, refreshing: false });
         }
-    }
-
-    openEvent(name, id) {
-        const { navigate } = this.props.navigation;
-        navigate('Event', { name, id });
     }
 
     async refreshList() {
         this.setState({ refreshing: true });
         await this.fetchList();
+    }
+
+    openTalk(name, data) {
+        const { navigate } = this.props.navigation;
+        navigate('Talk', { name, data });
     }
 
     render() {
@@ -165,7 +139,7 @@ class Home extends React.Component {
             if (this.state.cacheDate !== null) {
                 cache = (
                     <View>
-                        <Text style={style.offline.groups.text}>
+                        <Text style={style.Offline.text}>
                             Affichage hors-ligne datant du {moment(this.state.cacheDate).format('DD/MM/YYYY HH:mm')}
                         </Text>
                     </View>
@@ -173,15 +147,16 @@ class Home extends React.Component {
             }
             content = (
                 <FlatList
-                    renderItem={({ item, j, index }) => {
+                    renderItem={({ item }) => {
                         return (
-                            <EventRow
-                                id={item.id}
+                            <TalkRow
                                 name={item.name}
-                                address={item.address}
+                                location={item.location}
                                 startDate={item.startDate}
                                 endDate={item.endDate}
-                                openEvent={this.openEvent}
+                                category={item.category}
+                                data={item}
+                                openTalk={this.openTalk}
                             />
                         );
                     }}
@@ -196,7 +171,7 @@ class Home extends React.Component {
             );
         }
         return (
-            <View style={style.Home.view}>
+            <View style={style.Event.view}>
                 <Split lineColor={theme.border} noMargin={true}/>
                 {cache}
                 {content}
@@ -211,4 +186,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(Home);
+export default connect(mapStateToProps)(Group);
