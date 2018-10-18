@@ -55,11 +55,11 @@ export default class EventRow extends React.PureComponent {
                         flexDirection: 'column',
                     }}>
                     <Text style={{ fontSize: 18, fontWeight: '100' }}>{name}</Text>
-                    <View style={{ flexDirection: 'row', marginTop: 6 }}>
+                    <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
                         <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
                         <Text style={{ fontSize: 14, fontWeight: '200' }}>{address}</Text>
                     </View>
-                    <View style={{ flexDirection: 'row', marginTop: 2 }}>
+                    <View style={{ flexDirection: 'row', marginTop: 2, alignItems: 'center' }}>
                         <Entypo name="calendar" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
                         <Text style={{ fontSize: 14, fontWeight: '200' }}>{date}</Text>
                     </View>
