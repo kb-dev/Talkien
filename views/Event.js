@@ -182,7 +182,7 @@ class Group extends React.Component {
                         );
                     }}
                     renderSectionHeader={({ section: { title } }) => (
-                        <View style={{ marginTop: 10, paddingLeft: 4 }}>
+                        <View style={{ paddingTop: 10, paddingLeft: 4, backgroundColor: theme.listBackground }}>
                             <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{title}</Text>
                         </View>
                     )}
