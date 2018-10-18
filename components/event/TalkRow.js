@@ -49,7 +49,7 @@ export default class TalkRow extends React.PureComponent {
                 <View
                     style={{
                         backgroundColor: '#FFF',
-                        borderRadius: 5,
+                        borderRadius: 0,
                         borderWidth: 1,
                         borderColor: '#696969',
                         flexDirection: 'row',
