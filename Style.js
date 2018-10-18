@@ -3,7 +3,6 @@ const Theme = {
         primary: '#ff602c',
         secondary: '#ff754c',
         background: '#ededed',
-        // background: '#ededed',
         border: '#5b5b5b',
         icon: '#ff3c3c',
         font: '#000',
