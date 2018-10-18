@@ -40,7 +40,7 @@ class Talk extends React.PureComponent {
                     <Text style={style.Talk.title}>{this._name}</Text>
                 </View>
                 <View style={{ margin: 4 }}>
-                    <Text>{description}</Text>
+                    <Text style={{ textAlign: 'justify' }}>{description}</Text>
                 </View>
                 {location && (
                     <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
