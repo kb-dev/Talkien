@@ -1,5 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
+import { Constants } from 'expo';
 import NavigationBar from 'react-native-navbar';
 import PropTypes from 'prop-types';
 
@@ -19,18 +20,23 @@ export default class NavBar extends React.PureComponent {
     render() {
         const { leftButton, rightButton, title } = this.props;
 
-        let style = {},
-            titleStyle = {};
+        let style = { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' },
+            titleStyle = {},
+            containerStyle = {};
         if (Platform.OS === 'android') {
-            style.marginTop = 28;
+            containerStyle.marginTop = Constants.statusBarHeight;
+            style.borderWidth = 0;
+            style.borderColor = 'black';
             titleStyle.fontSize = 22;
             titleStyle.fontWeight = 'bold';
+            titleStyle.textAlignVertical = 'top';
         }
 
         return (
             <NavigationBackground>
                 <NavigationBar
                     style={style}
+                    containerStyle={containerStyle}
                     title={{ title, tintColor: 'white', style: titleStyle }}
                     tintColor={'transparent'}
                     leftButton={leftButton}

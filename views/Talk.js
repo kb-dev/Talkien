@@ -34,8 +34,6 @@ class Talk extends React.PureComponent {
         const theme = style.Theme[this.props.themeName];
         const { location, description, tags, category, speakers, lang, startDate, endDate } = this._data;
 
-        console.log({ startDate, m: moment(startDate) });
-
         return (
             <View style={style.Talk.container}>
                 <View style={style.Talk.titleView}>

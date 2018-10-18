@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, View } from 'react-native';
+import { ActivityIndicator, AsyncStorage, NetInfo, SectionList, Text, View } from 'react-native';
 import moment from 'moment';
 import Toast from 'react-native-root-toast';
 import axios from 'axios';
@@ -61,7 +61,7 @@ class Group extends React.Component {
                     `https://raw.githubusercontent.com/kb-dev/talkien-events/master/${this.state.eventId}/events.json`,
                     {
                         responseType: 'json',
-                    },
+                    }
                 );
                 this.setState({ cacheDate: null });
                 list = response.data;
@@ -109,7 +109,27 @@ class Group extends React.Component {
         }
 
         if (list !== null) {
-            this.setState({ list, refreshing: false });
+            let sectionsIndex = {};
+            let sections = [];
+            let index = 0;
+            list.forEach((talk) => {
+                let sectionId = `${talk.startDate}-${talk.endDate}`;
+                if (sectionsIndex[sectionId]) {
+                    sections[sectionsIndex[sectionId]].data.push(talk);
+                } else {
+                    sectionsIndex[sectionId] = index;
+                    sections[index] = {
+                        title: `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`,
+                        data: [talk],
+                        timestamp: moment(talk.startDate).valueOf(),
+                    };
+                    index++;
+                }
+            });
+
+            sections.sort((a, b) => a.timestamp - b.timestamp);
+
+            this.setState({ list: sections, refreshing: false });
         }
     }
 
@@ -146,7 +166,7 @@ class Group extends React.Component {
                 );
             }
             content = (
-                <FlatList
+                <SectionList
                     renderItem={({ item }) => {
                         return (
                             <TalkRow
@@ -155,23 +175,28 @@ class Group extends React.Component {
                                 startDate={item.startDate}
                                 endDate={item.endDate}
                                 category={item.category}
+                                lang={item.lang}
                                 data={item}
                                 openTalk={this.openTalk}
                             />
                         );
                     }}
-                    data={this.state.list}
+                    renderSectionHeader={({ section: { title } }) => (
+                        <View style={{ marginTop: 10, paddingLeft: 4 }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{title}</Text>
+                        </View>
+                    )}
+                    sections={this.state.list}
                     keyExtractor={(item, index) => index.toString()}
                     initialNumToRender={20}
                     onEndReachedThreshold={0.1}
-                    style={[{ backgroundColor: theme.listBackground }]}
                     onRefresh={this.refreshList}
                     refreshing={this.state.refreshing}
                 />
             );
         }
         return (
-            <View style={style.Event.view}>
+            <View style={[style.Event.view, { backgroundColor: theme.listBackground }]}>
                 <Split lineColor={theme.border} noMargin={true}/>
                 {cache}
                 {content}

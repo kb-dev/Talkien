@@ -1,5 +1,3 @@
-import { Constants } from 'expo';
-
 const Theme = {
     light: {
         primary: '#ff602c',
@@ -51,7 +49,6 @@ const BackButton = {
 };
 
 const StatusBar = {
-    paddingTop: Constants.statusBarHeight,
     backgroundColor: Theme.light.primary,
 };
 
@@ -78,6 +75,7 @@ const Talk = {
 
 const Event = {
     view: {
+        flex: 1,
         paddingBottom: 4,
     },
 };

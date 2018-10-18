@@ -7,7 +7,7 @@ import style from '../../Style';
 class CustomStatusBar extends React.PureComponent {
     render() {
         const theme = style.Theme[this.props.themeName];
-        return <StatusBar barStyle="light-content" backgroundColor={'black'} style={style.StatusBar}/>;
+        return <StatusBar barStyle="light-content" backgroundColor={theme.secondary} style={style.StatusBar}/>;
     }
 }
 
