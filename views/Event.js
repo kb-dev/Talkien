@@ -1,33 +1,24 @@
 import React from 'react';
-import { ActivityIndicator, AsyncStorage, NetInfo, SectionList, Text, View } from 'react-native';
+import { ActivityIndicator, AsyncStorage, NetInfo, Platform, SectionList, Text, View } from 'react-native';
+import { Calendar, LinearGradient, Permissions } from 'expo';
 import moment from 'moment';
 import Toast from 'react-native-root-toast';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
-import BackButton from '../components/buttons/BackButton';
 import TalkRow from '../components/event/TalkRow';
-import NavBar from '../components/ui/NavBar';
 import style from '../Style';
-import Split from '../components/ui/Split';
 
 class Group extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-        let eventName = navigation.state.params.name;
-
-        let leftButton = <BackButton backAction={navigation.goBack}/>;
-
-        return {
-            title: eventName,
-            header: <NavBar title={eventName} leftButton={leftButton}/>,
-        };
-    };
-
     constructor(props) {
         super(props);
         this.state = {
             eventName: this.props.navigation.state.params.name,
             eventId: this.props.navigation.state.params.id,
+            startDate: this.props.navigation.state.params.startDate,
+            endDate: this.props.navigation.state.params.endDate,
+            calendarId: this.props.navigation.state.params.calendarId,
+            calendarTitle: this.props.navigation.state.params.calendarTitle,
             cacheDate: null,
             list: null,
             refreshing: false,
@@ -39,6 +30,100 @@ class Group extends React.Component {
 
     async componentDidMount() {
         await this.fetchList();
+        await this.checkCalendar();
+    }
+
+    async checkCalendar() {
+        const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+        if (status !== 'granted') {
+            Toast.show(`Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement`, {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.BOTTOM,
+                shadow: true,
+                animation: true,
+                hideOnPress: true,
+                delay: 0,
+            });
+            return;
+        }
+
+        if (this.state.calendarId) {
+            try {
+                const calendar = await Calendar.getEventsAsync(
+                    [this.state.calendarId],
+                    moment(this.state.startDate).toDate(),
+                    moment(this.state.endDate).toDate(),
+                );
+                console.log('calendarId', { calendar });
+            } catch (e) {
+                console.warn(e);
+                Toast.show(`Erreur de lecture du calendrier`, {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0,
+                });
+            }
+        } else {
+            try {
+                let calendar = {
+                    title: `${this.state.eventName} | Talkien`,
+                    name: `${this.state.eventName} | Talkien`,
+                    color: '#66b1e6',
+                    entityType: Calendar.EntityTypes.EVENT,
+                    allowsModifications: true,
+                    id: this.state.eventId,
+                    source: {
+                        isLocalAccount: true,
+                        name: 'Talkien',
+                        type: Calendar.SourceType.LOCAL,
+                    },
+                    ownerAccount: 'talkien',
+                    timeZone: 'Europe/Paris',
+                    isVisible: true,
+                    isPrimary: false,
+                    isSynced: false,
+                    allowedAvailabilities: ['busy', 'free'],
+                    allowedReminders: ['default', 'alert', 'email'],
+                    accessLevel: 'owner',
+                    allowedAttendeeTypes: ['none', 'required', 'optional'],
+                };
+
+                if (Platform.OS === 'ios') {
+                    const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+                    const local = calendars.filter((calendar) => calendar.source && calendar.source.type === Calendar.CalendarType.LOCAL);
+                    if (local.length < 1) {
+                        throw new Error('No local calendar found');
+                    }
+
+                    calendar = {
+                        title: `${this.state.eventName} | Talkien`,
+                        color: '#66b1e6',
+                        entityType: Calendar.EntityTypes.EVENT,
+                        allowsModifications: true,
+                        allowedAvailabilities: [],
+                        id: this.state.eventId,
+                        sourceId: local[0].source.id,
+                    };
+                }
+
+                const calendarId = await Calendar.createCalendarAsync(calendar);
+                console.log({ calendarId });
+                this.setState({ calendarId });
+            } catch (e) {
+                console.warn(e);
+                Toast.show(`Erreur de création du calendrier`, {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0,
+                });
+            }
+        }
     }
 
     async getCache() {
@@ -140,7 +225,7 @@ class Group extends React.Component {
 
     openTalk(name, data) {
         const { navigate } = this.props.navigation;
-        navigate('Talk', { name, data });
+        navigate('Talk', { name, data, calendarTitle: this.state.calendarTitle, calendarId: this.state.calendarId });
     }
 
     render() {
@@ -150,11 +235,7 @@ class Group extends React.Component {
             cache = null;
 
         if (this.state.list === null) {
-            content = (
-                <View style={{ flex: 1, backgroundColor: theme.listBackground }}>
-                    <ActivityIndicator style={[style.Home.containerView]} size="large" animating={true}/>
-                </View>
-            );
+            content = <ActivityIndicator style={[style.Home.containerView]} size="large" animating={true}/>;
         } else {
             if (this.state.cacheDate !== null) {
                 cache = (
@@ -182,7 +263,7 @@ class Group extends React.Component {
                         );
                     }}
                     renderSectionHeader={({ section: { title } }) => (
-                        <View style={{ paddingTop: 10, paddingLeft: 4, backgroundColor: theme.listBackground }}>
+                        <View style={{ paddingTop: 10, paddingLeft: 4 }}>
                             <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{title}</Text>
                         </View>
                     )}
@@ -196,10 +277,11 @@ class Group extends React.Component {
             );
         }
         return (
-            <View style={[style.Event.view, { backgroundColor: theme.listBackground }]}>
-                <Split lineColor={theme.border} noMargin={true}/>
-                {cache}
-                {content}
+            <View style={[style.Event.view]}>
+                <LinearGradient colors={[style.Theme.gradient.start, style.Theme.gradient.end]} style={style.Home.gradient}>
+                    {cache}
+                    {content}
+                </LinearGradient>
             </View>
         );
     }

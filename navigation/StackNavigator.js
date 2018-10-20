@@ -29,5 +29,6 @@ export default createStackNavigator(
     },
     {
         navigationOptions: ({ navigation }) => setStatusBar(navigation),
+        headerMode: 'none',
     }
 );

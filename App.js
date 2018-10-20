@@ -50,7 +50,7 @@ const CustomDrawerContentComponent = connect(
                         alignContent: 'center',
                         height: 120,
                     }}>
-                    <Image style={{ width: 72, height: 72, marginLeft: 8, marginTop: 16 }} source={require('./assets/icon.png')}/>
+                    <Image style={{ width: 72, height: 72, marginLeft: 8, marginTop: 16 }} source={require('./assets/talkien_android.png')}/>
                 </View>
                 <ScrollView style={{ backgroundColor: theme.background }}>
                     <View>
@@ -156,7 +156,7 @@ export default class App extends React.Component {
     }
 
     _loadAssetsAsync() {
-        const imageAssets = cacheImages([require('./assets/icon.png')]);
+        const imageAssets = cacheImages([require('./assets/talkien_android.png')]);
 
         const fontAssets = cacheFonts([
             FontAwesome.font,

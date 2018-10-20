@@ -1,10 +1,11 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Entypo } from '@expo/vector-icons';
-
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment/locale/fr';
+
+import style from '../../Style';
+import { LinearGradient } from 'expo';
 
 moment.locale('fr');
 
@@ -13,8 +14,12 @@ export default class EventRow extends React.PureComponent {
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         address: PropTypes.string.isRequired,
+        topics: PropTypes.array,
+        colors: PropTypes.array.isRequired,
         startDate: PropTypes.string.isRequired,
         endDate: PropTypes.string.isRequired,
+        calendarTitle: PropTypes.string.isRequired,
+        calendarId: PropTypes.string,
         openEvent: PropTypes.func.isRequired,
     };
 
@@ -24,14 +29,15 @@ export default class EventRow extends React.PureComponent {
         this._onPress = this._onPress.bind(this);
     }
 
-    _onPress(e) {
+    _onPress() {
+        const { name, id, startDate, endDate, calendarTitle, calendarId } = this.props;
         requestAnimationFrame(() => {
-            this.props.openEvent(this.props.name, this.props.id);
+            this.props.openEvent(name, id, startDate, endDate, calendarTitle, calendarId);
         });
     }
 
     render() {
-        const { address, name } = this.props;
+        const { topics, name, colors, calendarTitle } = this.props;
         let { startDate, endDate } = this.props;
 
         startDate = moment(startDate);
@@ -44,25 +50,14 @@ export default class EventRow extends React.PureComponent {
         }
 
         return (
-            <TouchableOpacity onPress={this._onPress} style={{ marginHorizontal: 4, marginTop: 8 }}>
-                <View
-                    style={{
-                        backgroundColor: '#FFF',
-                        borderRadius: 5,
-                        borderWidth: 1,
-                        borderColor: '#696969',
-                        padding: 4,
-                        flexDirection: 'column',
-                    }}>
-                    <Text style={{ fontSize: 18, fontWeight: '100' }}>{name}</Text>
-                    <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                        <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
-                        <Text style={{ fontSize: 14, fontWeight: '200' }}>{address}</Text>
+            <TouchableOpacity onPress={this._onPress} style={{ marginVertical: 8 }}>
+                <View style={style.EventRow.view}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={[style.EventRow.nameText, { color: colors[0] }]}>{name}</Text>
+                        <LinearGradient colors={colors} start={[0, 0]} end={[1, 0]} style={style.EventRow.gradient}/>
                     </View>
-                    <View style={{ flexDirection: 'row', marginTop: 2, alignItems: 'center' }}>
-                        <Entypo name="calendar" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
-                        <Text style={{ fontSize: 14, fontWeight: '200' }}>{date}</Text>
-                    </View>
+                    <Text style={style.EventRow.topics}>{topics.join(', ')}</Text>
+                    <Text style={style.EventRow.date}>{date}</Text>
                 </View>
             </TouchableOpacity>
         );

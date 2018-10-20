@@ -1,14 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, TextInput, View } from 'react-native';
+import { Calendar, LinearGradient, Permissions } from 'expo';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import Toast from 'react-native-root-toast';
 import moment from 'moment';
 import 'moment/locale/fr';
 // UI
-import NavBar from '../components/ui/NavBar';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Split from '../components/ui/Split';
 import EventRow from '../components/home/EventRow';
 // Misc
 import { compareDate } from '../Utils';
@@ -17,56 +15,61 @@ import style from '../Style';
 moment.locale('fr');
 
 class Home extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-        let title = 'Conférences';
-        let leftButton = (
-            <TouchableOpacity
-                onPress={() => {
-                    navigation.openDrawer();
-                }}
-                style={{
-                    justifyContent: 'space-around',
-                    paddingLeft: 16,
-                }}>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                    }}>
-                    <MaterialCommunityIcons
-                        name="menu"
-                        size={32}
-                        style={{
-                            color: 'white',
-                            height: 32,
-                            width: 32,
-                        }}
-                    />
-                </View>
-            </TouchableOpacity>
-        );
-
-        return {
-            title,
-            header: <NavBar title={title} leftButton={leftButton}/>,
-        };
-    };
-
     constructor(props) {
         super(props);
 
         this.state = {
             cacheDate: null,
             list: null,
+            originalList: null,
+            calendars: null,
             refreshing: false,
         };
 
         this.refreshList = this.refreshList.bind(this);
         this.openEvent = this.openEvent.bind(this);
+        this.onSearch = this.onSearch.bind(this);
     }
 
     async componentDidMount() {
         await this.fetchList();
+        await this.checkCalendars();
+    }
+
+    async checkCalendars() {
+        await this.setState({ disabled: true });
+        const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+        if (status !== 'granted') {
+            Toast.show(`Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement`, {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.BOTTOM,
+                shadow: true,
+                animation: true,
+                hideOnPress: true,
+                delay: 0,
+            });
+        } else {
+            try {
+                const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+                // console.log({ calendars });
+                // calendars.forEach((calendar) => {
+                //     if (calendar.source && calendar.source.name === 'Talkien') {
+                //         console.log({ calendar });
+                //         Calendar.deleteCalendarAsync(calendar.id);
+                //     }
+                // });
+                this.setState({ calendars });
+            } catch (e) {
+                Toast.show(`Erreur de lecture des calendriers`, {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0,
+                });
+            }
+        }
     }
 
     async getCache() {
@@ -135,13 +138,21 @@ class Home extends React.Component {
 
         if (list !== null) {
             list.sort((eventA, eventB) => compareDate(eventA.startDate, eventB.startDate));
-            this.setState({ list, refreshing: false });
+            this.setState({ list, originalList: list, refreshing: false });
         }
     }
 
-    openEvent(name, id) {
+    openEvent(name, id, startDate, endDate, calendarTitle, calendarId) {
         const { navigate } = this.props.navigation;
-        navigate('Event', { name, id });
+        navigate('Event', { name, id, startDate, endDate, calendarTitle, calendarId });
+    }
+
+    onSearch(input) {
+        let regex = new RegExp(input, 'gi');
+        const list = this.state.originalList.filter((event) => {
+            return event.name.match(regex);
+        });
+        this.setState({ list });
     }
 
     async refreshList() {
@@ -156,11 +167,7 @@ class Home extends React.Component {
             cache = null;
 
         if (this.state.list === null) {
-            content = (
-                <View style={{ flex: 1, backgroundColor: theme.listBackground }}>
-                    <ActivityIndicator style={[style.Home.containerView]} size="large" animating={true}/>
-                </View>
-            );
+            content = <ActivityIndicator style={[style.Home.containerView]} size="large" animating={true}/>;
         } else {
             if (this.state.cacheDate !== null) {
                 cache = (
@@ -173,14 +180,30 @@ class Home extends React.Component {
             }
             content = (
                 <FlatList
-                    renderItem={({ item, j, index }) => {
+                    renderItem={({ item }) => {
+                        const calendarTitle = `${item.name} | Talkien`;
+                        let calendarId = null;
+                        if (this.state.calendars !== null) {
+                            let foundCalendar = this.state.calendars.find(
+                                (calendar) => calendar.name === calendarTitle || calendar.title === calendarTitle,
+                            );
+                            if (foundCalendar) {
+                                calendarId = foundCalendar.id;
+                            }
+                            console.log({ calendarId, calendarTitle });
+                        }
+
                         return (
                             <EventRow
                                 id={item.id}
                                 name={item.name}
                                 address={item.address}
+                                topics={item.topics}
                                 startDate={item.startDate}
                                 endDate={item.endDate}
+                                colors={item.colors}
+                                calendarTitle={calendarTitle}
+                                calendarId={calendarId}
                                 openEvent={this.openEvent}
                             />
                         );
@@ -189,17 +212,40 @@ class Home extends React.Component {
                     keyExtractor={(item, index) => index.toString()}
                     initialNumToRender={20}
                     onEndReachedThreshold={0.1}
-                    style={[{ backgroundColor: theme.listBackground }]}
+                    style={[{ backgroundColor: 'transparent' }]}
                     onRefresh={this.refreshList}
                     refreshing={this.state.refreshing}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
                 />
             );
         }
         return (
             <View style={style.Home.view}>
-                <Split lineColor={theme.border} noMargin={true}/>
-                {cache}
-                {content}
+                <LinearGradient colors={[style.Theme.gradient.start, style.Theme.gradient.end]} style={style.Home.gradient}>
+                    <View style={style.Home.titleView}>
+                        <Text style={style.Home.titleText}>Quel évènement cherchez-vous ?</Text>
+                    </View>
+                    <View style={style.Home.search.view}>
+                        <TextInput
+                            style={style.Home.search.input}
+                            autoCapitalize={'none'}
+                            autoCorrect={false}
+                            multiline={false}
+                            spellCheck={false}
+                            underlineColorAndroid={'transparent'}
+                            clearButtonMode={'always'}
+                            placeholder={'Exemple : DevFest Lille'}
+                            placeholderTextColor={'#d8d8d8'}
+                            onChangeText={this.onSearch}
+                        />
+                    </View>
+                    <View style={style.Home.nextEvents.titleView}>
+                        <Text style={style.Home.nextEvents.titleText}>Prochains évènements</Text>
+                    </View>
+                    {cache}
+                    {content}
+                </LinearGradient>
             </View>
         );
     }

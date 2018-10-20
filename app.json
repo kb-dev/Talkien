@@ -11,11 +11,9 @@
     ],
     "version": "0.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/talkien_android.png",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ff602c"
     },
     "android": {
       "permissions": [
@@ -27,6 +25,7 @@
       "**/*"
     ],
     "ios": {
+      "icon": "./assets/talkien_ios.png",
       "supportsTablet": true
     },
     "updates": {

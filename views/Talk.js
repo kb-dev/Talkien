@@ -4,32 +4,20 @@ import { Calendar, Permissions } from 'expo';
 import { Entypo } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import Toast from 'react-native-root-toast';
 import 'moment/locale/fr';
 
-import BackButton from '../components/buttons/BackButton';
-import NavBar from '../components/ui/NavBar';
 import style from '../Style';
-import Toast from 'react-native-root-toast';
 
 moment.locale('fr');
 
 class Talk extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-        let talkName = 'Talk';
-
-        let leftButton = <BackButton backAction={navigation.goBack}/>;
-
-        return {
-            title: talkName,
-            header: <NavBar title={talkName} leftButton={leftButton}/>,
-        };
-    };
-
     constructor(props) {
         super(props);
         this.state = { disabled: false };
 
         this._name = this.props.navigation.state.params.name;
+        this._calendarId = this.props.navigation.state.params.calendarId;
         this._data = this.props.navigation.state.params.data;
         this._onPress = this._onPress.bind(this);
     }
