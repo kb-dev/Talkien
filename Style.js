@@ -138,8 +138,6 @@ const Offline = {
 const Talk = {
     container: {
         flex: 1,
-        padding: 8,
-        paddingTop: Expo.Constants.statusBarHeight,
     },
     title: {
         fontSize: 24,

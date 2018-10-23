@@ -137,8 +137,13 @@ class Home extends React.Component {
         }
 
         if (list !== null) {
-            list.sort((eventA, eventB) => compareDate(eventA.startDate, eventB.startDate));
-            this.setState({ list, originalList: list, refreshing: false });
+            const rawList = list;
+            rawList.sort((eventA, eventB) => compareDate(eventA.startDate, eventB.startDate));
+            list = rawList.filter((event) => moment(event.endDate).isAfter(moment()));
+            if (list.length > 3) {
+                list = list.slice(0, 3);
+            }
+            this.setState({ list, originalList: list, rawList, refreshing: false });
         }
     }
 
@@ -148,11 +153,15 @@ class Home extends React.Component {
     }
 
     onSearch(input) {
-        let regex = new RegExp(input, 'gi');
-        const list = this.state.originalList.filter((event) => {
-            return event.name.match(regex);
-        });
-        this.setState({ list });
+        if (input === '') {
+            this.setState({ list: this.state.originalList });
+        } else {
+            let regex = new RegExp(input, 'gi');
+            const list = this.state.rawList.filter((event) => {
+                return event.name.match(regex);
+            });
+            this.setState({ list });
+        }
     }
 
     async refreshList() {
