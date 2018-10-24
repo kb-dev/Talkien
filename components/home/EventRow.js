@@ -56,7 +56,9 @@ export default class EventRow extends React.PureComponent {
                         <Text style={[style.EventRow.nameText, { color: colors[0] }]}>{name}</Text>
                         <LinearGradient colors={colors} start={[0, 0]} end={[1, 0]} style={style.EventRow.gradient}/>
                     </View>
-                    <Text style={style.EventRow.topics}>{topics.join(', ')}</Text>
+                    <Text style={style.EventRow.topics} ellipsizeMode={'tail'} numberOfLines={2}>
+                        {topics.join(', ')}
+                    </Text>
                     <Text style={style.EventRow.date}>{date}</Text>
                 </View>
             </TouchableOpacity>

@@ -115,6 +115,7 @@ const EventRow = {
         lineHeight: 16,
         fontWeight: '200',
         color: '#FFF',
+
     },
     date: {
         fontSize: 14,
