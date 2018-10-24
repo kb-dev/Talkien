@@ -24,6 +24,7 @@ class Home extends React.Component {
             originalList: null,
             calendars: null,
             refreshing: false,
+            searching: false,
         };
 
         this.refreshList = this.refreshList.bind(this);
@@ -140,9 +141,6 @@ class Home extends React.Component {
             const rawList = list;
             rawList.sort((eventA, eventB) => compareDate(eventA.startDate, eventB.startDate));
             list = rawList.filter((event) => moment(event.endDate).isAfter(moment()));
-            if (list.length > 3) {
-                list = list.slice(0, 3);
-            }
             this.setState({ list, originalList: list, rawList, refreshing: false });
         }
     }
@@ -154,13 +152,13 @@ class Home extends React.Component {
 
     onSearch(input) {
         if (input === '') {
-            this.setState({ list: this.state.originalList });
+            this.setState({ list: this.state.originalList, searching: false });
         } else {
             let regex = new RegExp(input, 'gi');
             const list = this.state.rawList.filter((event) => {
                 return event.name.match(regex);
             });
-            this.setState({ list });
+            this.setState({ list, searching: true });
         }
     }
 
@@ -170,19 +168,19 @@ class Home extends React.Component {
     }
 
     render() {
-        const theme = style.Theme[this.props.themeName];
+        const { list, cacheDate, searching, refreshing, calendars } = this.state;
 
         let content = null,
             cache = null;
 
-        if (this.state.list === null) {
+        if (list === null) {
             content = <ActivityIndicator style={[style.Home.containerView]} size="large" animating={true}/>;
         } else {
-            if (this.state.cacheDate !== null) {
+            if (cacheDate !== null) {
                 cache = (
                     <View>
                         <Text style={style.offline.groups.text}>
-                            Affichage hors-ligne datant du {moment(this.state.cacheDate).format('DD/MM/YYYY HH:mm')}
+                            Affichage hors-ligne datant du {moment(cacheDate).format('DD/MM/YYYY HH:mm')}
                         </Text>
                     </View>
                 );
@@ -192,8 +190,8 @@ class Home extends React.Component {
                     renderItem={({ item }) => {
                         const calendarTitle = `${item.name} | Talkien`;
                         let calendarId = null;
-                        if (this.state.calendars !== null) {
-                            let foundCalendar = this.state.calendars.find(
+                        if (calendars !== null) {
+                            let foundCalendar = calendars.find(
                                 (calendar) => calendar.name === calendarTitle || calendar.title === calendarTitle,
                             );
                             if (foundCalendar) {
@@ -217,13 +215,13 @@ class Home extends React.Component {
                             />
                         );
                     }}
-                    data={this.state.list}
+                    data={list.slice(0, 3)}
                     keyExtractor={(item, index) => index.toString()}
                     initialNumToRender={20}
                     onEndReachedThreshold={0.1}
                     style={[{ backgroundColor: 'transparent' }]}
                     onRefresh={this.refreshList}
-                    refreshing={this.state.refreshing}
+                    refreshing={refreshing}
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}
                 />
@@ -250,7 +248,8 @@ class Home extends React.Component {
                         />
                     </View>
                     <View style={style.Home.nextEvents.titleView}>
-                        <Text style={style.Home.nextEvents.titleText}>Prochains évènements</Text>
+                        {!searching && <Text style={style.Home.nextEvents.titleText}>Prochains évènements</Text>}
+                        {searching && <Text style={style.Home.nextEvents.titleText}>Évènements trouvés</Text>}
                     </View>
                     {cache}
                     {content}

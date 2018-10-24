@@ -44,8 +44,8 @@ const Home = {
         backgroundColor: 'transparent',
     },
     titleView: {
-        marginTop: 80,
-        marginBottom: 20,
+        marginTop: 60,
+        marginBottom: 40,
         paddingHorizontal: 20,
         alignSelf: 'stretch',
     },
@@ -94,15 +94,25 @@ const EventRow = {
         flexDirection: 'column',
         justifyContent: 'space-between',
     },
-    nameText: { fontSize: 16, fontWeight: 'bold', color: '#FFF' },
+    nameText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#FFF',
+    },
     gradient: {
         marginLeft: 8,
         flex: 1,
         height: 4,
     },
+    nameView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     topics: {
+        height: 36,
         fontFamily: Platform.OS === 'android' ? 'sans-serif-light' : undefined,
         fontSize: 12,
+        lineHeight: 16,
         fontWeight: '200',
         color: '#FFF',
     },

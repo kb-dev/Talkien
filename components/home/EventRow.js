@@ -52,7 +52,7 @@ export default class EventRow extends React.PureComponent {
         return (
             <TouchableOpacity onPress={this._onPress} style={{ marginVertical: 8 }}>
                 <View style={style.EventRow.view}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={style.EventRow.nameView}>
                         <Text style={[style.EventRow.nameText, { color: colors[0] }]}>{name}</Text>
                         <LinearGradient colors={colors} start={[0, 0]} end={[1, 0]} style={style.EventRow.gradient}/>
                     </View>
