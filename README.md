@@ -12,7 +12,7 @@ No build is available for now.
 
 ## Development
 
-- Install npm
+- Install Node.js + npm
 - `npm install -g expo`
 - `npm install`
 - `expo start`
