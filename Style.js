@@ -7,15 +7,28 @@ const Theme = {
         background: '#ededed',
         border: '#5b5b5b',
         icon: '#ff3c3c',
-        font: '#000',
+        font: '#FFF',
         greyBackground: '#919191',
         listBackground: '#ffb996',
         iconColor: '#ff3c3c',
+        link: '#103c81',
     },
     dark: {},
     gradient: {
-        start: '#ff852e',
-        end: '#e049a6',
+        start: '#FF852E',
+        middle: '#E54646',
+        end: '#E049A6',
+    },
+};
+
+const Gradient = {
+    default: {
+        colors: [],
+        locations: undefined,
+    },
+    Home: {
+        colors: ['#FF852E', '#E54646', '#E049A6'],
+        locations: [0, 0.67, 1],
     },
 };
 
@@ -26,6 +39,7 @@ const About = {
         fontSize: 24,
     },
     view: {
+        flex: 1,
         padding: 10,
     },
     content: {
@@ -41,11 +55,12 @@ const Home = {
     },
     view: {
         flex: 1,
-        backgroundColor: 'transparent',
+        paddingHorizontal: 20,
+        backgroundColor: 'rgba(0,0,0,0)',
     },
     titleView: {
         marginTop: 60,
-        marginBottom: 40,
+        marginBottom: 60,
         paddingHorizontal: 20,
         alignSelf: 'stretch',
     },
@@ -55,11 +70,6 @@ const Home = {
         fontSize: 32,
         textAlign: 'center',
         color: 'white',
-    },
-    gradient: {
-        flex: 1,
-        paddingHorizontal: 20,
-        paddingTop: Expo.Constants.statusBarHeight,
     },
     search: {
         view: {
@@ -75,8 +85,8 @@ const Home = {
     },
     nextEvents: {
         titleView: {
-            marginTop: 12,
-            marginBottom: 8,
+            marginTop: 24,
+            marginBottom: 4,
         },
         titleText: {
             fontWeight: 'bold',
@@ -88,7 +98,12 @@ const Home = {
 
 const EventRow = {
     view: {
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowColor: 'rgba(0,0,0,0.5)',
         borderRadius: 2,
         padding: 12,
         flexDirection: 'column',
@@ -115,7 +130,6 @@ const EventRow = {
         lineHeight: 16,
         fontWeight: '200',
         color: '#FFF',
-
     },
     date: {
         fontSize: 14,
@@ -149,9 +163,11 @@ const Offline = {
 const Talk = {
     container: {
         flex: 1,
+        padding: 8,
     },
     title: {
         fontSize: 24,
+        color: '#FFF',
     },
     titleView: {
         marginBottom: 4,
@@ -164,4 +180,11 @@ const Event = {
     },
 };
 
-export default { Theme, About, Home, BackButton, StatusBar, Offline, Talk, Event, EventRow };
+const ActivityIndicator = {
+    color: '#FFF',
+    style: {
+        margin: 30,
+    },
+};
+
+export default { Theme, About, Home, BackButton, StatusBar, Offline, Talk, Event, EventRow, Gradient, ActivityIndicator };

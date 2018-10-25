@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Calendar, LinearGradient, Permissions } from 'expo';
+import { Calendar, Permissions } from 'expo';
 import { Entypo } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -150,8 +150,8 @@ class Talk extends React.Component {
 
         let action = (
             <TouchableOpacity onPress={this.addEventToCalendar} style={{ marginHorizontal: 8, marginTop: 8 }} disabled={this.state.disabled}>
-                <View style={{ alignSelf: 'stretch', borderColor: '#000', borderWidth: 1 }}>
-                    <Text style={{ textAlign: 'center' }}>Ajouter au calendrier</Text>
+                <View style={{ alignSelf: 'stretch', borderColor: '#FFF', borderWidth: 1, padding: 4 }}>
+                    <Text style={{ textAlign: 'center', color: '#FFF', fontSize: 16 }}>Ajouter au calendrier</Text>
                 </View>
             </TouchableOpacity>
         );
@@ -162,8 +162,8 @@ class Talk extends React.Component {
                     onPress={this.deleteEventFromCalendar}
                     style={{ marginHorizontal: 8, marginTop: 8 }}
                     disabled={this.state.disabled}>
-                    <View style={{ alignSelf: 'stretch', borderColor: '#000', borderWidth: 1 }}>
-                        <Text style={{ textAlign: 'center' }}>Supprimer du calendrier</Text>
+                    <View style={{ alignSelf: 'stretch', borderColor: '#FFF', borderWidth: 1, padding: 4 }}>
+                        <Text style={{ textAlign: 'center', color: '#FFF', fontSize: 16 }}>Supprimer du calendrier</Text>
                     </View>
                 </TouchableOpacity>
             );
@@ -171,33 +171,31 @@ class Talk extends React.Component {
 
         return (
             <View style={style.Talk.container}>
-                <LinearGradient colors={[style.Theme.gradient.start, style.Theme.gradient.end]} style={style.Home.gradient}>
-                    <View style={style.Talk.titleView}>
-                        <Text style={style.Talk.title}>{this._name}</Text>
+                <View style={style.Talk.titleView}>
+                    <Text style={style.Talk.title}>{this._name}</Text>
+                </View>
+                <View style={{ margin: 4 }}>
+                    <Text style={{ textAlign: 'justify', color: '#FFF' }}>{description}</Text>
+                </View>
+                {location && (
+                    <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
+                        <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4, color: '#FFF' }}/>
+                        <Text style={{ color: '#FFF' }}>{location}</Text>
                     </View>
-                    <View style={{ margin: 4 }}>
-                        <Text style={{ textAlign: 'justify' }}>{description}</Text>
+                )}
+                {category && (
+                    <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
+                        <Entypo name="tag" size={14} style={{ width: 14, height: 14, marginRight: 4, color: '#FFF' }}/>
+                        <Text style={{ fontSize: 14, fontWeight: '200', color: '#FFF' }}>{category}</Text>
                     </View>
-                    {location && (
-                        <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                            <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
-                            <Text>{location}</Text>
-                        </View>
-                    )}
-                    {category && (
-                        <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                            <Entypo name="tag" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
-                            <Text style={{ fontSize: 14, fontWeight: '200' }}>{category}</Text>
-                        </View>
-                    )}
-                    <View>
-                        <Text>Début : {moment(startDate).format('HH:mm')}</Text>
-                    </View>
-                    <View>
-                        <Text>Fin : {moment(endDate).format('HH:mm')}</Text>
-                    </View>
-                    <View>{action}</View>
-                </LinearGradient>
+                )}
+                <View>
+                    <Text style={{ color: '#FFF' }}>Début : {moment(startDate).format('HH:mm')}</Text>
+                </View>
+                <View>
+                    <Text style={{ color: '#FFF' }}>Fin : {moment(endDate).format('HH:mm')}</Text>
+                </View>
+                <View>{action}</View>
             </View>
         );
     }

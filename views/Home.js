@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, TextInput, View } from 'react-native';
-import { Calendar, LinearGradient, Permissions } from 'expo';
+import { Calendar, Permissions } from 'expo';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import Toast from 'react-native-root-toast';
@@ -173,9 +173,18 @@ class Home extends React.Component {
         let content = null,
             cache = null;
 
+        let title = <Text style={style.Home.nextEvents.titleText}>Prochains évènements</Text>;
+
         if (list === null) {
-            content = <ActivityIndicator style={[style.Home.containerView]} size="large" animating={true}/>;
+            content = (
+                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color}/>
+            );
         } else {
+            if (list.length === 0) {
+                title = <Text style={style.Home.nextEvents.titleText}>Aucun évènement</Text>;
+            } else if (searching) {
+                title = <Text style={style.Home.nextEvents.titleText}>Évènements trouvés</Text>;
+            }
             if (cacheDate !== null) {
                 cache = (
                     <View>
@@ -229,31 +238,26 @@ class Home extends React.Component {
         }
         return (
             <View style={style.Home.view}>
-                <LinearGradient colors={[style.Theme.gradient.start, style.Theme.gradient.end]} style={style.Home.gradient}>
-                    <View style={style.Home.titleView}>
-                        <Text style={style.Home.titleText}>Quel évènement cherchez-vous ?</Text>
-                    </View>
-                    <View style={style.Home.search.view}>
-                        <TextInput
-                            style={style.Home.search.input}
-                            autoCapitalize={'none'}
-                            autoCorrect={false}
-                            multiline={false}
-                            spellCheck={false}
-                            underlineColorAndroid={'transparent'}
-                            clearButtonMode={'always'}
-                            placeholder={'Exemple : DevFest Lille'}
-                            placeholderTextColor={'#d8d8d8'}
-                            onChangeText={this.onSearch}
-                        />
-                    </View>
-                    <View style={style.Home.nextEvents.titleView}>
-                        {!searching && <Text style={style.Home.nextEvents.titleText}>Prochains évènements</Text>}
-                        {searching && <Text style={style.Home.nextEvents.titleText}>Évènements trouvés</Text>}
-                    </View>
-                    {cache}
-                    {content}
-                </LinearGradient>
+                <View style={style.Home.titleView}>
+                    <Text style={style.Home.titleText}>Quel évènement cherchez-vous ?</Text>
+                </View>
+                <View style={style.Home.search.view}>
+                    <TextInput
+                        style={style.Home.search.input}
+                        autoCapitalize={'none'}
+                        autoCorrect={false}
+                        multiline={false}
+                        spellCheck={false}
+                        underlineColorAndroid={'transparent'}
+                        clearButtonMode={'always'}
+                        placeholder={'Exemple : DevFest Lille'}
+                        placeholderTextColor={'#d8d8d8'}
+                        onChangeText={this.onSearch}
+                    />
+                </View>
+                <View style={style.Home.nextEvents.titleView}>{title}</View>
+                {cache}
+                {content}
             </View>
         );
     }

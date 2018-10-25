@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, AsyncStorage, NetInfo, Platform, SectionList, Text, View } from 'react-native';
-import { Calendar, LinearGradient, Permissions } from 'expo';
+import { Calendar, Permissions } from 'expo';
 import moment from 'moment';
 import Toast from 'react-native-root-toast';
 import axios from 'axios';
@@ -235,7 +235,9 @@ class Group extends React.Component {
             cache = null;
 
         if (this.state.list === null) {
-            content = <ActivityIndicator style={[style.Home.containerView]} size="large" animating={true}/>;
+            content = (
+                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color}/>
+            );
         } else {
             if (this.state.cacheDate !== null) {
                 cache = (
@@ -273,15 +275,14 @@ class Group extends React.Component {
                     onEndReachedThreshold={0.1}
                     onRefresh={this.refreshList}
                     refreshing={this.state.refreshing}
+                    stickySectionHeadersEnabled={false}
                 />
             );
         }
         return (
             <View style={[style.Event.view]}>
-                <LinearGradient colors={[style.Theme.gradient.start, style.Theme.gradient.end]} style={style.Home.gradient}>
-                    {cache}
-                    {content}
-                </LinearGradient>
+                {cache}
+                {content}
             </View>
         );
     }

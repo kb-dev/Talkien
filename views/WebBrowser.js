@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 
 import style from '../Style';
 import BackButton from '../components/buttons/BackButton';
-import NavigationBackground from '../components/ui/NavigationBackground';
 
 function treatTitle(str) {
     if (str.length > 18) {
@@ -23,20 +22,6 @@ function treatTitle(str) {
 }
 
 class WebBrowser extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-        let title = treatTitle(navigation.getParam('title', 'Navigateur web'));
-        let leftButton = <BackButton backAction={navigation.goBack}/>;
-
-        return {
-            title,
-            header: (
-                <NavigationBackground>
-                    <NavigationBar title={{ title, tintColor: 'white' }} tintColor={'transparent'} leftButton={leftButton}/>
-                </NavigationBackground>
-            ),
-        };
-    };
-
     constructor(props) {
         super(props);
 
@@ -65,15 +50,15 @@ class WebBrowser extends React.Component {
     }
 
     onRefresh() {
-        this.webBrowser.reload();
+        this.webBrowser && this.webBrowser.reload();
     }
 
     onBack() {
-        this.webBrowser.goBack();
+        this.webBrowser && this.webBrowser.goBack();
     }
 
     onForward() {
-        this.webBrowser.goForward();
+        this.webBrowser && this.webBrowser.goForward();
     }
 
     openURL() {
@@ -104,6 +89,7 @@ class WebBrowser extends React.Component {
         }
 
         const theme = style.Theme[this.props.themeName];
+        let leftButton = <BackButton backAction={this.props.navigation.goBack}/>;
 
         let javascript = null;
         if (Platform.OS !== 'ios') {
@@ -111,7 +97,13 @@ class WebBrowser extends React.Component {
         }
 
         return (
-            <View style={{ flex: 1, flexDirection: 'column' }}>
+            <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'rgba(0,0,0,0)' }}>
+                <NavigationBar
+                    title={{ title: treatTitle(String(this.state.title)), tintColor: '#FFF' }}
+                    tintColor={'transparent'}
+                    leftButton={leftButton}
+                    statusBar={{ style: 'light-content', hidden: true }}
+                />
                 <WebView
                     ref={(webBrowser) => (this.webBrowser = webBrowser)}
                     javaScriptEnabled={true}
@@ -121,11 +113,7 @@ class WebBrowser extends React.Component {
                     injectedJavaScript={javascript}
                     onNavigationStateChange={(e) => {
                         if (!e.loading) {
-                            this.setState({ url: e.url, title: e.title, canGoBack: e.canGoBack, loading: e.loading }, () => {
-                                if (!!this.state.title) {
-                                    this.props.navigation.setParams({ title: this.state.title });
-                                }
-                            });
+                            this.setState({ url: e.url, title: e.title, canGoBack: e.canGoBack, loading: e.loading });
                         }
                     }}
                     source={{ uri: this.state.uri }}
