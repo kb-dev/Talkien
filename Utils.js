@@ -1,24 +1,8 @@
-import { StatusBar } from 'react-native';
 import moment from 'moment';
 
 function upperCaseFirstLetter(string) {
     let firstLetter = string[0].toUpperCase();
     return firstLetter + string.substr(1);
-}
-
-function setStatusBar(navigation) {
-    navigation.addListener('willFocus', () => {
-        StatusBar.setBarStyle('light-content');
-    });
-    navigation.addListener('didFocus', () => {
-        StatusBar.setBarStyle('light-content');
-    });
-    navigation.addListener('willBlur', () => {
-        StatusBar.setBarStyle('light-content');
-    });
-    navigation.addListener('didBlur', () => {
-        StatusBar.setBarStyle('light-content');
-    });
 }
 
 /**
@@ -61,4 +45,4 @@ function compareDate(a, b) {
     return 0;
 }
 
-export { compareDate, upperCaseFirstLetter, setStatusBar, isArraysEquals };
+export { compareDate, upperCaseFirstLetter, isArraysEquals };

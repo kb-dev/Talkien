@@ -23,12 +23,12 @@ class Talk extends React.Component {
         this.deleteEventFromCalendar = this.deleteEventFromCalendar.bind(this);
     }
 
-    addEventToCalendar(e) {
+    addEventToCalendar() {
         requestAnimationFrame(async () => {
             await this.setState({ disabled: true });
             const { status } = await Permissions.askAsync(Permissions.CALENDAR);
             if (status !== 'granted') {
-                Toast.show(`Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement`, {
+                Toast.show('Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement', {
                     duration: Toast.durations.LONG,
                     position: Toast.positions.BOTTOM,
                     shadow: true,
@@ -52,7 +52,7 @@ class Talk extends React.Component {
                     const eventId = await Calendar.createEventAsync(this._calendarId, event);
                     this.setState({ eventId });
                 } catch (e) {
-                    Toast.show(`Erreur d'ajout au calendrier`, {
+                    Toast.show('Erreur d\'ajout au calendrier', {
                         duration: Toast.durations.LONG,
                         position: Toast.positions.BOTTOM,
                         shadow: true,
@@ -66,12 +66,12 @@ class Talk extends React.Component {
         });
     }
 
-    deleteEventFromCalendar(e) {
+    deleteEventFromCalendar() {
         requestAnimationFrame(async () => {
             await this.setState({ disabled: true });
             const { status } = await Permissions.askAsync(Permissions.CALENDAR);
             if (status !== 'granted') {
-                Toast.show(`Vous devez accepter les permissions liées au calendrier pour pouvoir supprimer un événement`, {
+                Toast.show('Vous devez accepter les permissions liées au calendrier pour pouvoir supprimer un événement', {
                     duration: Toast.durations.LONG,
                     position: Toast.positions.BOTTOM,
                     shadow: true,
@@ -84,7 +84,7 @@ class Talk extends React.Component {
                     await Calendar.deleteEventAsync(this.state.eventId);
                     await this.setState({ eventId: null, disabled: false });
                 } catch (e) {
-                    Toast.show(`Erreur de suppression de l'évènement du calendrier`, {
+                    Toast.show('Erreur de suppression de l\'évènement du calendrier', {
                         duration: Toast.durations.LONG,
                         position: Toast.positions.BOTTOM,
                         shadow: true,
@@ -103,7 +103,7 @@ class Talk extends React.Component {
         await this.setState({ disabled: true });
         const { status } = await Permissions.askAsync(Permissions.CALENDAR);
         if (status !== 'granted') {
-            Toast.show(`Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement`, {
+            Toast.show('Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement', {
                 duration: Toast.durations.LONG,
                 position: Toast.positions.BOTTOM,
                 shadow: true,
@@ -126,8 +126,7 @@ class Talk extends React.Component {
                 }
                 await this.setState({ disabled: false });
             } catch (e) {
-                console.log({ e });
-                Toast.show(`Erreur de lecture du calendrier`, {
+                Toast.show('Erreur de lecture du calendrier', {
                     duration: Toast.durations.LONG,
                     position: Toast.positions.BOTTOM,
                     shadow: true,
@@ -145,13 +144,13 @@ class Talk extends React.Component {
     }
 
     render() {
-        const theme = style.Theme[this.props.themeName];
-        const { location, description, tags, category, speakers, lang, startDate, endDate } = this._data;
+        const { location, description, category, startDate, endDate } = this._data;
+        const color = style.Theme.colors.font;
 
         let action = (
             <TouchableOpacity onPress={this.addEventToCalendar} style={{ marginHorizontal: 8, marginTop: 8 }} disabled={this.state.disabled}>
                 <View style={{ alignSelf: 'stretch', borderColor: '#FFF', borderWidth: 1, padding: 4 }}>
-                    <Text style={{ textAlign: 'center', color: '#FFF', fontSize: 16 }}>Ajouter au calendrier</Text>
+                    <Text style={{ textAlign: 'center', color, fontSize: 16 }}>Ajouter au calendrier</Text>
                 </View>
             </TouchableOpacity>
         );
@@ -163,7 +162,7 @@ class Talk extends React.Component {
                     style={{ marginHorizontal: 8, marginTop: 8 }}
                     disabled={this.state.disabled}>
                     <View style={{ alignSelf: 'stretch', borderColor: '#FFF', borderWidth: 1, padding: 4 }}>
-                        <Text style={{ textAlign: 'center', color: '#FFF', fontSize: 16 }}>Supprimer du calendrier</Text>
+                        <Text style={{ textAlign: 'center', color, fontSize: 16 }}>Supprimer du calendrier</Text>
                     </View>
                 </TouchableOpacity>
             );
@@ -175,25 +174,25 @@ class Talk extends React.Component {
                     <Text style={style.Talk.title}>{this._name}</Text>
                 </View>
                 <View style={{ margin: 4 }}>
-                    <Text style={{ textAlign: 'justify', color: '#FFF' }}>{description}</Text>
+                    <Text style={{ textAlign: 'justify', color }}>{description}</Text>
                 </View>
                 {location && (
                     <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                        <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4, color: '#FFF' }}/>
-                        <Text style={{ color: '#FFF' }}>{location}</Text>
+                        <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4, color }}/>
+                        <Text style={{ color }}>{location}</Text>
                     </View>
                 )}
                 {category && (
                     <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                        <Entypo name="tag" size={14} style={{ width: 14, height: 14, marginRight: 4, color: '#FFF' }}/>
-                        <Text style={{ fontSize: 14, fontWeight: '200', color: '#FFF' }}>{category}</Text>
+                        <Entypo name="tag" size={14} style={{ width: 14, height: 14, marginRight: 4, color }}/>
+                        <Text style={{ fontSize: 14, fontWeight: '200', color }}>{category}</Text>
                     </View>
                 )}
                 <View>
-                    <Text style={{ color: '#FFF' }}>Début : {moment(startDate).format('HH:mm')}</Text>
+                    <Text style={{ color }}>Début : {moment(startDate).format('HH:mm')}</Text>
                 </View>
                 <View>
-                    <Text style={{ color: '#FFF' }}>Fin : {moment(endDate).format('HH:mm')}</Text>
+                    <Text style={{ color }}>Fin : {moment(endDate).format('HH:mm')}</Text>
                 </View>
                 <View>{action}</View>
             </View>

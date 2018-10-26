@@ -1,22 +1,20 @@
 import React from 'react';
-import { Image } from 'react-native';
+import { Image, StatusBar } from 'react-native';
 import { AppLoading, Asset, Font, SplashScreen } from 'expo';
 import { Entypo, Feather, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/es/integration/react';
 // UI elements
-import StatusBar from './components/ui/StatusBar';
 // Views and navigation
 import StackNavigator from './navigation/StackNavigator';
 // Misc
 import configureStore from './stores';
 
-
 const { store, pStore } = configureStore();
 const RNRedux = () => (
     <Provider store={store}>
         <PersistGate loading={null} persistor={pStore}>
-            <StatusBar/>
+            <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent"/>
             <StackNavigator/>
         </PersistGate>
     </Provider>
@@ -37,13 +35,11 @@ function cacheImages(images) {
 }
 
 export default class App extends React.Component {
-    state = {
-        isSplashReady: false,
-    };
-
     constructor(props) {
         super(props);
-
+        this.state = {
+            isSplashReady: false,
+        };
         this._loadAssetsAsync = this._loadAssetsAsync.bind(this);
     }
 

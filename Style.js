@@ -1,29 +1,35 @@
 import { Platform } from 'react-native';
 
 const Theme = {
-    light: {
+    colors: {
         primary: '#ff602c',
         secondary: '#ff754c',
         background: '#ededed',
         border: '#5b5b5b',
+        disabledIcon: '#808080',
         icon: '#ff3c3c',
         font: '#FFF',
-        greyBackground: '#919191',
+        greyBackground: 'transparent',
         listBackground: '#ffb996',
         iconColor: '#ff3c3c',
-        link: '#103c81',
+        link: '#0dadb0',
     },
-    dark: {},
     gradient: {
         start: '#FF852E',
         middle: '#E54646',
         end: '#E049A6',
     },
+    font: {
+        light: {
+            fontWeight: '200',
+            fontFamily: Platform.OS === 'android' ? 'sans-serif-light' : undefined,
+        },
+    },
 };
 
 const Gradient = {
     default: {
-        colors: [],
+        colors: ['#0590D5', '#DF1A80'],
         locations: undefined,
     },
     Home: {
@@ -56,7 +62,6 @@ const Home = {
     view: {
         flex: 1,
         paddingHorizontal: 20,
-        backgroundColor: 'rgba(0,0,0,0)',
     },
     titleView: {
         marginTop: 60,
@@ -80,7 +85,7 @@ const Home = {
             borderRadius: 8,
             paddingVertical: 8,
             paddingHorizontal: 16,
-            color: '#FFF',
+            color: Theme.colors.font,
         },
     },
     nextEvents: {
@@ -101,9 +106,10 @@ const EventRow = {
         backgroundColor: 'rgba(0,0,0,0.3)',
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 1,
         },
-        shadowColor: 'rgba(0,0,0,0.5)',
+        shadowOpacity: 1,
+        shadowColor: 'rgba(0,0,0,0.3)',
         borderRadius: 2,
         padding: 12,
         flexDirection: 'column',
@@ -112,7 +118,7 @@ const EventRow = {
     nameText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#FFF',
+        color: Theme.colors.font,
     },
     gradient: {
         marginLeft: 8,
@@ -129,27 +135,34 @@ const EventRow = {
         fontSize: 12,
         lineHeight: 16,
         fontWeight: '200',
-        color: '#FFF',
+        color: Theme.colors.font,
     },
     date: {
         fontSize: 14,
         fontWeight: '200',
-        color: '#FFF',
+        color: Theme.colors.font,
         paddingTop: 8,
         fontFamily: Platform.OS === 'android' ? 'sans-serif-light' : undefined,
     },
 };
 
 const BackButton = {
-    paddingLeft: 16,
-    paddingRight: 32,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    view: {
+        paddingLeft: 16,
+        paddingRight: 32,
+        paddingVertical: 8,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    text: {
+        fontSize: 20,
+        color: Theme.colors.font,
+    },
 };
 
 const StatusBar = {
-    backgroundColor: Theme.light.primary,
+    backgroundColor: Theme.colors.primary,
 };
 
 const Offline = {
@@ -167,24 +180,109 @@ const Talk = {
     },
     title: {
         fontSize: 24,
-        color: '#FFF',
+        color: Theme.colors.font,
     },
     titleView: {
         marginBottom: 4,
     },
 };
 
-const Event = {
+const Program = {
+    containerView: {
+        flex: 1,
+    },
     view: {
         flex: 1,
+        paddingHorizontal: 40,
+    },
+};
+
+const Event = {
+    containerView: {
+        flex: 1,
+    },
+    view: {
+        flex: 1,
+        paddingHorizontal: 40,
+    },
+    titleView: {
+        paddingTop: 24,
+        paddingBottom: 16,
+    },
+    title: {
+        fontSize: 36,
+        fontWeight: '200',
+        fontFamily: Platform.OS === 'android' ? 'sans-serif-light' : undefined,
+        color: Theme.colors.font,
+    },
+    descriptionView: {
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 1,
+        shadowColor: 'rgba(0,0,0,0.3)',
+        borderRadius: 2,
+        padding: 12,
+    },
+    button: {
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 1,
+        shadowColor: 'rgba(0,0,0,0.3)',
+        borderRadius: 2,
+        padding: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    locationView: {
+        marginVertical: 12,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 1,
+        shadowColor: 'rgba(0,0,0,0.3)',
+        borderRadius: 2,
+    },
+    locationText: {
+        padding: 12,
+    },
+    dateView: {
+        marginBottom: 8,
+    },
+    defaultText: {
+        color: Theme.colors.font,
+    },
+    date: {
+        fontWeight: '200',
+        fontFamily: Platform.OS === 'android' ? 'sans-serif-light' : undefined,
+    },
+    fullAddress: {
+        fontWeight: '200',
+        fontFamily: Platform.OS === 'android' ? 'sans-serif-light' : undefined,
     },
 };
 
 const ActivityIndicator = {
-    color: '#FFF',
+    color: Theme.colors.font,
     style: {
         margin: 30,
     },
 };
 
-export default { Theme, About, Home, BackButton, StatusBar, Offline, Talk, Event, EventRow, Gradient, ActivityIndicator };
+const NavBar = {
+    button: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderColor: '#FFF',
+    },
+};
+
+export default { Theme, About, Home, BackButton, StatusBar, Offline, Talk, Event, Program, EventRow, Gradient, ActivityIndicator, NavBar };

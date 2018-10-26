@@ -1,7 +1,15 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
+import PropTypes from 'prop-types';
+
+import style from '../../Style';
 
 export default class URLButton extends React.PureComponent {
+    static propTypes = {
+        title: PropTypes.string.isRequired,
+        url: PropTypes.string.isRequired,
+    };
+
     constructor(props) {
         super(props);
         this.openURL = this.openURL.bind(this);
@@ -12,11 +20,9 @@ export default class URLButton extends React.PureComponent {
     }
 
     render() {
-        const { theme } = this.props;
-
         return (
             <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={this.openURL}>
-                <Text style={{ color: theme.link }}>{this.props.title}</Text>
+                <Text style={{ color: style.Theme.colors.link }}>{this.props.title}</Text>
             </TouchableOpacity>
         );
     }

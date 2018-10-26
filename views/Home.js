@@ -1,6 +1,5 @@
 import React from 'react';
 import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, TextInput, View } from 'react-native';
-import { Calendar, Permissions } from 'expo';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import Toast from 'react-native-root-toast';
@@ -34,43 +33,6 @@ class Home extends React.Component {
 
     async componentDidMount() {
         await this.fetchList();
-        await this.checkCalendars();
-    }
-
-    async checkCalendars() {
-        await this.setState({ disabled: true });
-        const { status } = await Permissions.askAsync(Permissions.CALENDAR);
-        if (status !== 'granted') {
-            Toast.show(`Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement`, {
-                duration: Toast.durations.LONG,
-                position: Toast.positions.BOTTOM,
-                shadow: true,
-                animation: true,
-                hideOnPress: true,
-                delay: 0,
-            });
-        } else {
-            try {
-                const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-                // console.log({ calendars });
-                // calendars.forEach((calendar) => {
-                //     if (calendar.source && calendar.source.name === 'Talkien') {
-                //         console.log({ calendar });
-                //         Calendar.deleteCalendarAsync(calendar.id);
-                //     }
-                // });
-                this.setState({ calendars });
-            } catch (e) {
-                Toast.show(`Erreur de lecture des calendriers`, {
-                    duration: Toast.durations.LONG,
-                    position: Toast.positions.BOTTOM,
-                    shadow: true,
-                    animation: true,
-                    hideOnPress: true,
-                    delay: 0,
-                });
-            }
-        }
     }
 
     async getCache() {
@@ -145,9 +107,9 @@ class Home extends React.Component {
         }
     }
 
-    openEvent(name, id, startDate, endDate, calendarTitle, calendarId) {
+    openEvent(data) {
         const { navigate } = this.props.navigation;
-        navigate('Event', { name, id, startDate, endDate, calendarTitle, calendarId });
+        navigate('Event', { data });
     }
 
     onSearch(input) {
@@ -196,34 +158,18 @@ class Home extends React.Component {
             }
             content = (
                 <FlatList
-                    renderItem={({ item }) => {
-                        const calendarTitle = `${item.name} | Talkien`;
-                        let calendarId = null;
-                        if (calendars !== null) {
-                            let foundCalendar = calendars.find(
-                                (calendar) => calendar.name === calendarTitle || calendar.title === calendarTitle,
-                            );
-                            if (foundCalendar) {
-                                calendarId = foundCalendar.id;
-                            }
-                            console.log({ calendarId, calendarTitle });
-                        }
-
-                        return (
-                            <EventRow
-                                id={item.id}
-                                name={item.name}
-                                address={item.address}
-                                topics={item.topics}
-                                startDate={item.startDate}
-                                endDate={item.endDate}
-                                colors={item.colors}
-                                calendarTitle={calendarTitle}
-                                calendarId={calendarId}
-                                openEvent={this.openEvent}
-                            />
-                        );
-                    }}
+                    renderItem={({ item }) => (
+                        <EventRow
+                            id={item.id}
+                            name={item.name}
+                            topics={item.topics}
+                            startDate={item.startDate}
+                            endDate={item.endDate}
+                            colors={item.colors}
+                            data={item}
+                            openEvent={this.openEvent}
+                        />
+                    )}
                     data={list.slice(0, 3)}
                     keyExtractor={(item, index) => index.toString()}
                     initialNumToRender={20}

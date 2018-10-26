@@ -6,16 +6,12 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment/locale/fr';
 
+import style from '../../Style';
+
 moment.locale('fr');
 
 export default class TalkRow extends React.PureComponent {
     static propTypes = {
-        name: PropTypes.string.isRequired,
-        location: PropTypes.string,
-        category: PropTypes.string,
-        lang: PropTypes.string,
-        startDate: PropTypes.string.isRequired,
-        endDate: PropTypes.string.isRequired,
         data: PropTypes.object.isRequired,
         openTalk: PropTypes.func.isRequired,
     };
@@ -26,9 +22,9 @@ export default class TalkRow extends React.PureComponent {
         this._onPress = this._onPress.bind(this);
     }
 
-    _onPress(e) {
+    _onPress() {
         requestAnimationFrame(() => {
-            this.props.openTalk(this.props.name, this.props.data);
+            this.props.openTalk(this.props.data.name, this.props.data);
         });
     }
 
@@ -43,59 +39,54 @@ export default class TalkRow extends React.PureComponent {
         }
     }
     render() {
-        const { name, location, startDate, endDate, category, lang } = this.props;
+        const { name, location, category, lang, description } = this.props.data;
         return (
             <TouchableOpacity onPress={this._onPress} style={{ marginHorizontal: 8, marginTop: 8 }}>
                 <View
                     style={{
-                        backgroundColor: '#FFF',
-                        borderRadius: 0,
-                        borderWidth: 1,
-                        borderColor: '#696969',
-                        flexDirection: 'row',
-                        margin: 0,
-                        paddingVertical: 8,
-                        flex: 1,
+                        backgroundColor: 'rgba(0,0,0,0.3)',
+                        shadowOffset: {
+                            width: 0,
+                            height: 1,
+                        },
+                        shadowOpacity: 1,
+                        shadowColor: 'rgba(0,0,0,0.3)',
+                        borderRadius: 2,
+                        padding: 12,
                     }}>
-                    <View
-                        style={{
-                            flex: 2,
-                            padding: 8,
-                        }}>
-                        <Text style={{ fontSize: 18, fontWeight: '100' }}>{name}</Text>
+                    <Text style={[style.Theme.font.light, { fontSize: 14, color: style.Theme.colors.font }]}>{name}</Text>
+                    <View style={{ paddingVertical: 8 }}>
+                        <Text
+                            style={[style.Theme.font.light, { fontSize: 14, color: style.Theme.colors.font }]}
+                            numberOfLines={3}
+                            ellipsizeMode={'tail'}>
+                            {description}
+                        </Text>
                     </View>
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: 'column',
-                            marginLeft: 8,
-                            padding: 8,
-                            borderColor: '#696969',
-                            borderLeftWidth: 2,
-                            justifyContent: 'flex-start',
-                            flexWrap: 'wrap',
-                        }}>
-                        <View style={{ flexDirection: 'row', marginTop: 2, alignItems: 'center' }}>
-                            <Entypo name="calendar" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
-                            <Text style={{ fontSize: 14, fontWeight: '200' }}>
-                                {moment(startDate).format('HH:mm')} - {moment(endDate).format('HH:mm')}
-                            </Text>
-                        </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         {location && (
                             <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                                <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
-                                <Text style={{ fontSize: 14, fontWeight: '200' }}>{location}</Text>
+                                <Entypo
+                                    name="location"
+                                    size={14}
+                                    style={{ width: 14, height: 14, marginRight: 4, color: style.Theme.colors.font }}
+                                />
+                                <Text style={[style.Theme.font.light, { fontSize: 14, color: style.Theme.colors.font }]}>{location}</Text>
                             </View>
                         )}
                         {category && (
                             <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                                <Entypo name="tag" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
-                                <Text style={{ fontSize: 14, fontWeight: '200' }}>{category}</Text>
+                                <Entypo name="tag" size={14} style={{ width: 14, height: 14, marginRight: 4, color: style.Theme.colors.font }}/>
+                                <Text style={[style.Theme.font.light, { fontSize: 14, color: style.Theme.colors.font }]}>{category}</Text>
                             </View>
                         )}
                         {lang && (
                             <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                                <MaterialCommunityIcons name="voice" size={14} style={{ width: 14, height: 14, marginRight: 4 }}/>
+                                <MaterialCommunityIcons
+                                    name="voice"
+                                    size={14}
+                                    style={{ width: 14, height: 14, marginRight: 4, color: style.Theme.colors.font }}
+                                />
                                 <Text style={{ fontSize: 14, fontWeight: '200' }}>{TalkRow.getFlag(lang)}</Text>
                             </View>
                         )}

@@ -13,13 +13,11 @@ export default class EventRow extends React.PureComponent {
     static propTypes = {
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        address: PropTypes.string.isRequired,
+        data: PropTypes.object.isRequired,
         topics: PropTypes.array,
         colors: PropTypes.array.isRequired,
         startDate: PropTypes.string.isRequired,
         endDate: PropTypes.string.isRequired,
-        calendarTitle: PropTypes.string.isRequired,
-        calendarId: PropTypes.string,
         openEvent: PropTypes.func.isRequired,
     };
 
@@ -30,14 +28,14 @@ export default class EventRow extends React.PureComponent {
     }
 
     _onPress() {
-        const { name, id, startDate, endDate, calendarTitle, calendarId } = this.props;
+        const { data } = this.props;
         requestAnimationFrame(() => {
-            this.props.openEvent(name, id, startDate, endDate, calendarTitle, calendarId);
+            this.props.openEvent(data);
         });
     }
 
     render() {
-        const { topics, name, colors, calendarTitle } = this.props;
+        const { topics, name, colors } = this.props;
         let { startDate, endDate } = this.props;
 
         startDate = moment(startDate);

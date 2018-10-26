@@ -74,11 +74,9 @@ class WebBrowser extends React.Component {
     }
 
     renderLoading() {
-        const theme = style.Theme[this.props.themeName];
-
         return (
-            <View style={{ flex: 1, justifyContent: 'center', backgroundColor: theme.greyBackground }}>
-                <ActivityIndicator size="large" color={theme.iconColor}/>
+            <View style={{ flex: 1, justifyContent: 'center', backgroundColor: style.Theme.colors.greyBackground }}>
+                <ActivityIndicator size="large" color={style.Theme.colors.iconColor}/>
             </View>
         );
     }
@@ -87,8 +85,6 @@ class WebBrowser extends React.Component {
         if (this.state.uri === null) {
             return this.renderLoading();
         }
-
-        const theme = style.Theme[this.props.themeName];
         let leftButton = <BackButton backAction={this.props.navigation.goBack}/>;
 
         let javascript = null;
@@ -97,7 +93,7 @@ class WebBrowser extends React.Component {
         }
 
         return (
-            <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'rgba(0,0,0,0)' }}>
+            <View style={{ flex: 1, flexDirection: 'column' }}>
                 <NavigationBar
                     title={{ title: treatTitle(String(this.state.title)), tintColor: '#FFF' }}
                     tintColor={'transparent'}
@@ -124,20 +120,28 @@ class WebBrowser extends React.Component {
                         justifyContent: 'space-between',
                         paddingHorizontal: 10,
                         paddingVertical: 5,
-                        backgroundColor: theme.background,
+                        backgroundColor: style.Theme.colors.background,
                     }}>
                     <TouchableOpacity disabled={!this.state.canGoBack} onPress={this.onBack}>
                         <MaterialIcons
                             name="navigate-before"
                             size={30}
-                            style={{ color: this.state.canGoBack ? theme.icon : 'grey', height: 30, width: 30 }}
+                            style={{
+                                color: this.state.canGoBack ? style.Theme.colors.icon : style.Theme.colors.disabledIcon,
+                                height: 30,
+                                width: 30,
+                            }}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity disabled={!this.state.canGoForward} onPress={this.onForward}>
                         <MaterialIcons
                             name="navigate-next"
                             size={30}
-                            style={{ color: this.state.canGoForward ? theme.icon : 'grey', height: 30, width: 30 }}
+                            style={{
+                                color: this.state.canGoForward ? style.Theme.colors.icon : style.Theme.colors.disabledIcon,
+                                height: 30,
+                                width: 30,
+                            }}
                         />
                     </TouchableOpacity>
 
@@ -145,7 +149,11 @@ class WebBrowser extends React.Component {
                         <MaterialIcons
                             name="refresh"
                             size={30}
-                            style={{ color: this.state.loading ? 'grey' : theme.icon, height: 30, width: 30 }}
+                            style={{
+                                color: this.state.loading ? style.Theme.colors.disabledIcon : style.Theme.colors.icon,
+                                height: 30,
+                                width: 30,
+                            }}
                         />
                     </TouchableOpacity>
 
@@ -159,9 +167,17 @@ class WebBrowser extends React.Component {
                         }}>
                         <View>
                             {Platform.OS === 'ios' ? (
-                                <MaterialCommunityIcons name="apple-safari" size={25} style={{ color: theme.icon, height: 25, width: 25 }}/>
+                                <MaterialCommunityIcons
+                                    name="apple-safari"
+                                    size={25}
+                                    style={{ color: style.Theme.colors.icon, height: 25, width: 25 }}
+                                />
                             ) : (
-                                <MaterialCommunityIcons name="google-chrome" size={25} style={{ color: theme.icon, height: 25, width: 25 }}/>
+                                <MaterialCommunityIcons
+                                    name="google-chrome"
+                                    size={25}
+                                    style={{ color: style.Theme.colors.icon, height: 25, width: 25 }}
+                                />
                             )}
                         </View>
                     </TouchableOpacity>

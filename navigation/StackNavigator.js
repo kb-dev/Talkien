@@ -1,17 +1,21 @@
 import React from 'react';
-import { Animated, Easing, SafeAreaView, TouchableOpacity, View } from 'react-native';
-import { LinearGradient } from 'expo';
-import { SimpleLineIcons } from '@expo/vector-icons';
+import { Animated, Easing, Platform, SafeAreaView, StatusBar, TouchableOpacity, View } from 'react-native';
+import { Constants, LinearGradient } from 'expo';
 import { createStackNavigator, NavigationActions } from 'react-navigation';
 // Views
 import Home from '../views/Home';
 import About from '../views/About';
 import Event from '../views/Event';
 import Talk from '../views/Talk';
+import Program from '../views/Program';
 import WebBrowser from '../views/WebBrowser';
+// Icons
+import SearchIcon from '../components/icons/Search';
 // Misc
-import { setStatusBar } from '../Utils';
 import style from '../Style';
+import CursorIcon from '../components/icons/Cursor';
+import CalendarIcon from '../components/icons/Calendar';
+import SettingsIcon from '../components/icons/Settings';
 
 const RootStack = createStackNavigator(
     {
@@ -27,18 +31,19 @@ const RootStack = createStackNavigator(
         Event: {
             screen: Event,
         },
+        Program: {
+            screen: Program,
+        },
         Talk: {
             screen: Talk,
         },
     },
     {
         initialRouteName: 'Home',
-        navigationOptions: ({ navigation }) => {
-            setStatusBar(navigation);
+        navigationOptions: () => {
             return {
                 header: null,
                 gesturesEnabled: true,
-                gestureResponseDistance: { horizontal: 200, vertical: 150 },
             };
         },
         headerMode: 'none',
@@ -100,7 +105,6 @@ export default class App extends React.Component {
 
     _onPressCalendar() {
         requestAnimationFrame(() => {
-            console.log('calendar');
         });
     }
 
@@ -111,69 +115,80 @@ export default class App extends React.Component {
     }
 
     render() {
-        let navBar = (
-            <View
-                style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    alignSelf: 'center',
-                    elevation: 1,
-                }}>
-                <View
-                    style={{
-                        backgroundColor: '#FD63B0',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderTopLeftRadius: 5,
-                        borderTopRightRadius: 5,
+        let borderStyle = {
+            borderTopLeftRadius: 5,
+            borderTopRightRadius: 5,
+        };
+        if (Platform.OS === 'ios') {
+            console.log(Constants.deviceName);
+            if (Constants.deviceName === 'iPhone X' || Constants.deviceName === 'iPhone XS' || Constants.deviceName === 'iPhone XR') {
+                borderStyle = {
+                    borderRadius: 25,
+                    paddingHorizontal: 16,
+                };
+            }
+        }
 
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.5,
-                        shadowRadius: 2,
-                    }}>
+        let navBar = (
+            <SafeAreaView style={{ position: 'absolute', bottom: 0, alignSelf: 'center', elevation: 1 }}>
+                <View
+                    style={[
+                        {
+                            backgroundColor: '#FD63B0',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            shadowColor: '#000',
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.5,
+                            shadowRadius: 2,
+                        },
+                        borderStyle,
+                    ]}>
                     <TouchableOpacity
                         onPress={this._onPressHome}
                         style={{
-                            paddingVertical: 8,
+                            paddingTop: 8,
                             paddingHorizontal: 16,
-                            borderColor: '#FFF',
-                            borderBottomWidth: this.state.screen === 'Home' ? 4 : 0,
                         }}>
-                        <SimpleLineIcons name="magnifier" size={24} style={{ color: '#FFF' }}/>
+                        <SearchIcon/>
+                        {this.state.screen === 'Home' ? <CursorIcon/> : <View style={{ height: 14, width: 36 }}/>}
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={this._onPressCalendar}
                         style={{
-                            paddingVertical: 8,
+                            paddingTop: 8,
                             paddingHorizontal: 16,
-                            borderColor: '#FFF',
-                            borderBottomWidth: this.state.screen === 'Event' ? 4 : 0,
                         }}>
-                        <SimpleLineIcons name="calendar" size={24} style={{ color: '#FFF' }}/>
+                        <CalendarIcon/>
+                        {this.state.screen === 'Calendar' ? <CursorIcon/> : <View style={{ height: 14, width: 36 }}/>}
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={this._onPressSettings}
                         style={{
-                            paddingVertical: 8,
+                            paddingTop: 8,
                             paddingHorizontal: 16,
-                            borderColor: '#FFF',
-                            borderBottomWidth: this.state.screen === 'About' ? 4 : 0,
                         }}>
-                        <SimpleLineIcons name="settings" size={24} style={{ color: '#FFF' }}/>
+                        <SettingsIcon/>
+                        {this.state.screen === 'About' ? <CursorIcon/> : <View style={{ height: 14, width: 36 }}/>}
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         );
 
-        if (this.state.screen === 'WebBrowser') {
+        let gradientColors = style.Gradient.default.colors;
+        let gradientLocation = style.Gradient.default.location;
+
+        if (this.state.screen === 'Home') {
+            gradientColors = style.Gradient.Home.colors;
+            gradientLocation = style.Gradient.Home.location;
+        } else if (this.state.screen === 'WebBrowser') {
             navBar = null;
         }
 
         return (
-            <LinearGradient colors={style.Gradient.Home.colors} locations={style.Gradient.Home.locations} style={{ flex: 1 }}>
-                <SafeAreaView style={{ flex: 1 }}>
+            <LinearGradient colors={gradientColors} locations={gradientLocation} style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
+                <SafeAreaView style={{ flex: 1, position: 'relative' }}>
                     <RootStack
                         ref={(navigator) => (this.navigator = navigator)}
                         style={{ flex: 1 }}
