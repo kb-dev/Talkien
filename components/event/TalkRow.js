@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableHighlight, View } from 'react-native';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import PropTypes from 'prop-types';
@@ -41,7 +41,7 @@ export default class TalkRow extends React.PureComponent {
     render() {
         const { name, location, category, lang, description } = this.props.data;
         return (
-            <TouchableOpacity onPress={this._onPress} style={{ marginHorizontal: 8, marginTop: 8 }}>
+            <TouchableHighlight underlayColor={style.Theme.overlayColor} onPress={this._onPress} style={{ marginHorizontal: 8, marginTop: 8 }}>
                 <View
                     style={{
                         backgroundColor: 'rgba(0,0,0,0.3)',
@@ -54,7 +54,7 @@ export default class TalkRow extends React.PureComponent {
                         borderRadius: 2,
                         padding: 12,
                     }}>
-                    <Text style={[style.Theme.font.light, { fontSize: 14, color: style.Theme.colors.font }]}>{name}</Text>
+                    <Text style={[{ fontSize: 16, color: style.Theme.colors.font }]}>{name}</Text>
                     <View style={{ paddingVertical: 8 }}>
                         <Text
                             style={[style.Theme.font.light, { fontSize: 14, color: style.Theme.colors.font }]}
@@ -92,7 +92,7 @@ export default class TalkRow extends React.PureComponent {
                         )}
                     </View>
                 </View>
-            </TouchableOpacity>
+            </TouchableHighlight>
         );
     }
 }

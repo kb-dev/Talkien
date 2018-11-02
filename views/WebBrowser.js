@@ -65,7 +65,7 @@ class WebBrowser extends React.Component {
         Linking.canOpenURL(this.state.url)
             .then((supported) => {
                 if (!supported) {
-                    console.warn('Can\'t handle url: ' + this.state.url);
+                    console.warn(`Can't handle url: ${  this.state.url}`);
                 } else {
                     return Linking.openURL(this.state.url);
                 }
@@ -85,7 +85,7 @@ class WebBrowser extends React.Component {
         if (this.state.uri === null) {
             return this.renderLoading();
         }
-        let leftButton = <BackButton backAction={this.props.navigation.goBack}/>;
+        const leftButton = <BackButton backAction={this.props.navigation.goBack}/>;
 
         let javascript = null;
         if (Platform.OS !== 'ios') {

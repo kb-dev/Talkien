@@ -49,15 +49,9 @@
       "error",
       "always"
     ],
-    "react-native/no-unused-styles": [
-      "error"
-    ],
-    "react-native/no-color-literals": [
-      "error"
-    ],
-    "react-native/no-raw-text": [
-      "error"
-    ],
+    "react-native/no-unused-styles": "error",
+    "react-native/no-color-literals": "error",
+    "react-native/no-raw-text": "error",
     "react/prop-types": [
       "error",
       {
@@ -66,9 +60,10 @@
         ]
       }
     ],
-    "no-shadow": [
-      "error"
-    ],
+    "no-shadow": "error",
+    "prefer-const": "error",
+    "prefer-template": "error",
+    "prefer-arrow-callback": "error",
     "no-console": [
       "error",
       {

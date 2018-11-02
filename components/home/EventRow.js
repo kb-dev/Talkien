@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableHighlight, View } from 'react-native';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment/locale/fr';
@@ -48,7 +48,7 @@ export default class EventRow extends React.PureComponent {
         }
 
         return (
-            <TouchableOpacity onPress={this._onPress} style={{ marginVertical: 8 }}>
+            <TouchableHighlight onPress={this._onPress} style={{ marginVertical: 8 }} underlayColor={style.Theme.overlayColor}>
                 <View style={style.EventRow.view}>
                     <View style={style.EventRow.nameView}>
                         <Text style={[style.EventRow.nameText, { color: colors[0] }]}>{name}</Text>
@@ -59,7 +59,7 @@ export default class EventRow extends React.PureComponent {
                     </Text>
                     <Text style={style.EventRow.date}>{date}</Text>
                 </View>
-            </TouchableOpacity>
+            </TouchableHighlight>
         );
     }
 }

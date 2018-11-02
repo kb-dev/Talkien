@@ -5,10 +5,14 @@ import moment from 'moment';
 import Toast from 'react-native-root-toast';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import 'moment/locale/fr';
 
 import TalkRow from '../components/event/TalkRow';
 import style from '../Style';
+import { capitalize } from '../Utils';
 import BackButton from '../components/buttons/BackButton';
+
+moment.locale('fr');
 
 class Program extends React.Component {
     constructor(props) {
@@ -23,9 +27,13 @@ class Program extends React.Component {
             cacheDate: null,
             list: null,
             refreshing: false,
+            error: false,
+            sectionTitle: null,
+            firstSection: null,
         };
 
         this.openTalk = this.openTalk.bind(this);
+        this.updateSectionTitle = this.updateSectionTitle.bind(this);
         this.refreshList = this.refreshList.bind(this);
     }
 
@@ -52,7 +60,7 @@ class Program extends React.Component {
         const { calendarTitle } = this.state;
         let calendarId = null;
         if (calendars !== null) {
-            let foundCalendar = calendars.find((calendar) => calendar.name === calendarTitle || calendar.title === calendarTitle);
+            const foundCalendar = calendars.find((calendar) => calendar.name === calendarTitle || calendar.title === calendarTitle);
             if (foundCalendar) {
                 calendarId = foundCalendar.id;
             }
@@ -159,12 +167,13 @@ class Program extends React.Component {
                     `https://raw.githubusercontent.com/kb-dev/talkien-events/master/${this.state.eventId}/events.json`,
                     {
                         responseType: 'json',
-                    },
+                    }
                 );
-                this.setState({ cacheDate: null });
+                this.setState({ error: true, cacheDate: null });
                 list = response.data;
                 AsyncStorage.setItem(this.state.eventId, JSON.stringify({ list, date: moment() }));
             } catch (error) {
+                this.setState({ error: true });
                 if (error.response) {
                     Toast.show(`Le serveur a répondu par une erreur ${error.response.status}`, {
                         duration: Toast.durations.LONG,
@@ -207,17 +216,22 @@ class Program extends React.Component {
         }
 
         if (list !== null) {
-            let sectionsIndex = {};
-            let sections = [];
+            const sectionsIndex = {};
+            const sections = [];
             let index = 0;
             list.forEach((talk) => {
-                let sectionId = `${talk.startDate}-${talk.endDate}`;
+                const sectionId = `${talk.startDate}-${talk.endDate}`;
+
                 if (sectionsIndex[sectionId]) {
                     sections[sectionsIndex[sectionId]].data.push(talk);
                 } else {
                     sectionsIndex[sectionId] = index;
+                    const title = `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`;
+                    if (this.state.firstSection === null) {
+                        this.setState({ fistSection: title });
+                    }
                     sections[index] = {
-                        title: `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`,
+                        title,
                         data: [talk],
                         timestamp: moment(talk.startDate).valueOf(),
                     };
@@ -238,7 +252,22 @@ class Program extends React.Component {
 
     openTalk(name, data) {
         const { navigate } = this.props.navigation;
-        navigate('Talk', { name, data, calendarTitle: this.state.calendarTitle, calendarId: this.state.calendarId });
+        navigate('Talk', {
+            name,
+            data,
+            calendarTitle: this.state.calendarTitle,
+            calendarId: this.state.calendarId,
+        });
+    }
+
+    updateSectionTitle({ viewableItems }) {
+        if (viewableItems && viewableItems.length > 0) {
+            if (viewableItems[0].section && viewableItems[0].section.title) {
+                if (this.state.sectionTitle !== viewableItems[0].section.title) {
+                    this.setState({ sectionTitle: viewableItems[0].section.title });
+                }
+            }
+        }
     }
 
     render() {
@@ -246,9 +275,16 @@ class Program extends React.Component {
             cache = null;
 
         if (this.state.list === null) {
-            content = (
-                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color}/>
-            );
+            if (!this.state.error) {
+                content = (
+                    <ActivityIndicator
+                        style={style.ActivityIndicator.style}
+                        size="large"
+                        animating={true}
+                        color={style.ActivityIndicator.color}
+                    />
+                );
+            }
         } else {
             if (this.state.cacheDate !== null) {
                 cache = (
@@ -273,18 +309,29 @@ class Program extends React.Component {
                             />
                         );
                     }}
-                    renderSectionHeader={({ section: { title } }) => (
-                        <View style={{ paddingTop: 10, paddingLeft: 4 }}>
-                            <Text style={{ color: style.Theme.colors.font, fontWeight: 'bold', fontSize: 18 }}>{title}</Text>
-                        </View>
-                    )}
+                    renderSectionHeader={({ section: { title } }) => {
+                        if (title === this.state.firstSection) {
+                            return null;
+                        }
+                        return (
+                            <View style={{ paddingTop: 10, paddingLeft: 4 }}>
+                                <Text style={{ color: style.Theme.colors.font, fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>
+                                    {title}
+                                </Text>
+                            </View>
+                        );
+                    }}
                     sections={this.state.list}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item, index) => index}
                     initialNumToRender={20}
                     onEndReachedThreshold={0.1}
                     onRefresh={this.refreshList}
                     refreshing={this.state.refreshing}
-                    stickySectionHeadersEnabled={true}
+                    stickySectionHeadersEnabled={false}
+                    viewabilityConfig={{
+                        itemVisiblePercentThreshold: 10,
+                    }}
+                    onViewableItemsChanged={this.updateSectionTitle}
                 />
             );
         }
@@ -294,7 +341,18 @@ class Program extends React.Component {
                     <BackButton backAction={this.props.navigation.goBack} title={this.state.eventName}/>
                 </View>
                 <View style={[style.Program.view]}>
-                    {cache}
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ height: 2, flexShrink: 1, backgroundColor: '#FFF', width: '100%' }}/>
+                        <View style={{ flexGrow: 1, marginHorizontal: 8 }}>
+                            <Text style={{ color: '#FFF', fontSize: 24, ...style.Theme.font.light }}>
+                                {capitalize(moment(this.state.startDate).format('dddd D MMMM'))}
+                            </Text>
+                        </View>
+                        <View style={{ flexShrink: 1, height: 2, backgroundColor: '#FFF', width: '100%' }}/>
+                    </View>
+                    <View style={{ alignSelf: 'stretch' }}>
+                        <Text>{this.state.sectionTitle}</Text>
+                    </View>
                     {content}
                 </View>
             </View>

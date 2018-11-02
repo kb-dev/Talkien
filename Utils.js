@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 function upperCaseFirstLetter(string) {
-    let firstLetter = string[0].toUpperCase();
+    const firstLetter = string[0].toUpperCase();
     return firstLetter + string.substr(1);
 }
 
@@ -26,6 +26,16 @@ function isArraysEquals(a, b) {
     }
 }
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function capitalize(string) {
+    let words = string.split(' ');
+    words = words.map((word) => capitalizeFirstLetter(word));
+    return words.join(' ');
+}
+
 function compareDate(a, b) {
     let momentA = a;
     let momentB = b;
@@ -45,4 +55,4 @@ function compareDate(a, b) {
     return 0;
 }
 
-export { compareDate, upperCaseFirstLetter, isArraysEquals };
+export { compareDate, upperCaseFirstLetter, isArraysEquals, capitalize, capitalizeFirstLetter };

@@ -8,6 +8,7 @@ import Toast from 'react-native-root-toast';
 import 'moment/locale/fr';
 
 import style from '../Style';
+import BackButton from '../components/buttons/BackButton';
 
 moment.locale('fr');
 
@@ -170,31 +171,36 @@ class Talk extends React.Component {
 
         return (
             <View style={style.Talk.container}>
-                <View style={style.Talk.titleView}>
-                    <Text style={style.Talk.title}>{this._name}</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
+                    <BackButton backAction={this.props.navigation.goBack} title={'Programme'}/>
                 </View>
-                <View style={{ margin: 4 }}>
-                    <Text style={{ textAlign: 'justify', color }}>{description}</Text>
-                </View>
-                {location && (
-                    <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                        <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4, color }}/>
-                        <Text style={{ color }}>{location}</Text>
+                <View style={style.Talk.view}>
+                    <View style={style.Talk.titleView}>
+                        <Text style={style.Talk.title}>{this._name}</Text>
                     </View>
-                )}
-                {category && (
-                    <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                        <Entypo name="tag" size={14} style={{ width: 14, height: 14, marginRight: 4, color }}/>
-                        <Text style={{ fontSize: 14, fontWeight: '200', color }}>{category}</Text>
+                    <View style={{ margin: 4 }}>
+                        <Text style={{ textAlign: 'justify', color }}>{description}</Text>
                     </View>
-                )}
-                <View>
-                    <Text style={{ color }}>Début : {moment(startDate).format('HH:mm')}</Text>
+                    {location && (
+                        <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
+                            <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4, color }}/>
+                            <Text style={{ color }}>{location}</Text>
+                        </View>
+                    )}
+                    {category && (
+                        <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
+                            <Entypo name="tag" size={14} style={{ width: 14, height: 14, marginRight: 4, color }}/>
+                            <Text style={{ fontSize: 14, fontWeight: '200', color }}>{category}</Text>
+                        </View>
+                    )}
+                    <View>
+                        <Text style={{ color }}>Début : {moment(startDate).format('HH:mm')}</Text>
+                    </View>
+                    <View>
+                        <Text style={{ color }}>Fin : {moment(endDate).format('HH:mm')}</Text>
+                    </View>
+                    <View>{action}</View>
                 </View>
-                <View>
-                    <Text style={{ color }}>Fin : {moment(endDate).format('HH:mm')}</Text>
-                </View>
-                <View>{action}</View>
             </View>
         );
     }

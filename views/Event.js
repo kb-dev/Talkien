@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableHighlight, View } from 'react-native';
 import { MapView, Svg } from 'expo';
 
 import style from '../Style';
@@ -80,8 +80,8 @@ export default class Event extends React.PureComponent {
             startDate,
         } = this.props.navigation.state.params.data;
 
-        let start = moment(startDate);
-        let end = moment(endDate);
+        const start = moment(startDate);
+        const end = moment(endDate);
 
         let date = `Du ${start.format('DD MMM YYYY')} au ${end.format('DD MMM YYYY')}`;
 
@@ -143,7 +143,7 @@ export default class Event extends React.PureComponent {
                             </MapView.Marker>
                         </MapView>
                     </View>
-                    <TouchableOpacity onPress={this.openProgram} style={{}}>
+                    <TouchableHighlight onPress={this.openProgram} underlayColor={style.Theme.overlayColor}>
                         <View style={style.Event.button}>
                             <Text style={style.Event.defaultText}>Voir le programme</Text>
                             <Ionicons
@@ -156,7 +156,7 @@ export default class Event extends React.PureComponent {
                                 }}
                             />
                         </View>
-                    </TouchableOpacity>
+                    </TouchableHighlight>
                 </View>
             </View>
         );

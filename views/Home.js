@@ -116,7 +116,7 @@ class Home extends React.Component {
         if (input === '') {
             this.setState({ list: this.state.originalList, searching: false });
         } else {
-            let regex = new RegExp(input, 'gi');
+            const regex = new RegExp(input, 'gi');
             const list = this.state.rawList.filter((event) => {
                 return event.name.match(regex);
             });
@@ -130,12 +130,12 @@ class Home extends React.Component {
     }
 
     render() {
-        const { list, cacheDate, searching, refreshing, calendars } = this.state;
+        const { list, cacheDate, searching, refreshing } = this.state;
 
         let content = null,
             cache = null;
 
-        let title = <Text style={style.Home.nextEvents.titleText}>Prochains évènements</Text>;
+        let title = <Text style={style.Home.eventsTitleText}>Prochains évènements</Text>;
 
         if (list === null) {
             content = (
@@ -143,9 +143,9 @@ class Home extends React.Component {
             );
         } else {
             if (list.length === 0) {
-                title = <Text style={style.Home.nextEvents.titleText}>Aucun évènement</Text>;
+                title = <Text style={style.Home.eventsTitleText}>Aucun évènement</Text>;
             } else if (searching) {
-                title = <Text style={style.Home.nextEvents.titleText}>Évènements trouvés</Text>;
+                title = <Text style={style.Home.eventsTitleText}>Évènements trouvés</Text>;
             }
             if (cacheDate !== null) {
                 cache = (
@@ -174,7 +174,7 @@ class Home extends React.Component {
                     keyExtractor={(item, index) => index.toString()}
                     initialNumToRender={20}
                     onEndReachedThreshold={0.1}
-                    style={[{ backgroundColor: 'transparent' }]}
+                    style={{ backgroundColor: 'transparent' }}
                     onRefresh={this.refreshList}
                     refreshing={refreshing}
                     showsVerticalScrollIndicator={false}
@@ -187,9 +187,9 @@ class Home extends React.Component {
                 <View style={style.Home.titleView}>
                     <Text style={style.Home.titleText}>Quel évènement cherchez-vous ?</Text>
                 </View>
-                <View style={style.Home.search.view}>
+                <View style={style.Home.searchView}>
                     <TextInput
-                        style={style.Home.search.input}
+                        style={style.Home.searchInput}
                         autoCapitalize={'none'}
                         autoCorrect={false}
                         multiline={false}
@@ -201,7 +201,7 @@ class Home extends React.Component {
                         onChangeText={this.onSearch}
                     />
                 </View>
-                <View style={style.Home.nextEvents.titleView}>{title}</View>
+                <View style={style.Home.eventsTitleView}>{title}</View>
                 {cache}
                 {content}
             </View>

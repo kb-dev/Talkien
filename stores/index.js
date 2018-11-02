@@ -12,7 +12,7 @@ const config = {
 const reducer = persistCombineReducers(config, rootReducer);
 
 export default () => {
-    let store = createStore(reducer);
-    let pStore = persistStore(store);
+    const store = createStore(reducer);
+    const pStore = persistStore(store);
     return { store, pStore };
 };
