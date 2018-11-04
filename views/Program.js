@@ -35,6 +35,8 @@ class Program extends React.Component {
         this.openTalk = this.openTalk.bind(this);
         this.updateSectionTitle = this.updateSectionTitle.bind(this);
         this.refreshList = this.refreshList.bind(this);
+        this.renderItem = this.renderItem.bind(this);
+        this.renderSection = this.renderSection.bind(this);
     }
 
     async componentDidMount() {
@@ -228,7 +230,7 @@ class Program extends React.Component {
                     sectionsIndex[sectionId] = index;
                     const title = `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`;
                     if (this.state.firstSection === null) {
-                        this.setState({ fistSection: title });
+                        this.setState({ firstSection: title, sectionTitle: title });
                     }
                     sections[index] = {
                         title,
@@ -270,11 +272,27 @@ class Program extends React.Component {
         }
     }
 
-    render() {
-        let content = null,
-            cache = null;
+    renderItem = ({ item }) => (
+        <TalkRow name={item.name} location={item.location} startDate={item.startDate} lang={item.lang} data={item} openTalk={this.openTalk}/>
+    );
 
-        if (this.state.list === null) {
+    renderSection = ({ section: { title } }) => {
+        if (title === this.state.firstSection) {
+            return null;
+        }
+        return (
+            <View style={{ paddingTop: 10, paddingLeft: 4 }}>
+                <Text style={{ color: style.Theme.colors.font, fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>{title}</Text>
+            </View>
+        );
+    };
+
+    keyExtract = (item, index) => index;
+
+    render() {
+        let content = null;
+
+        if (this.state.list === null || this.state.sectionTitle === null) {
             if (!this.state.error) {
                 content = (
                     <ActivityIndicator
@@ -286,50 +304,19 @@ class Program extends React.Component {
                 );
             }
         } else {
-            if (this.state.cacheDate !== null) {
-                cache = (
-                    <View>
-                        <Text style={style.Offline.text}>
-                            Affichage hors-ligne datant du {moment(this.state.cacheDate).format('DD/MM/YYYY HH:mm')}
-                        </Text>
-                    </View>
-                );
-            }
             content = (
                 <SectionList
-                    renderItem={({ item }) => {
-                        return (
-                            <TalkRow
-                                name={item.name}
-                                location={item.location}
-                                startDate={item.startDate}
-                                lang={item.lang}
-                                data={item}
-                                openTalk={this.openTalk}
-                            />
-                        );
-                    }}
-                    renderSectionHeader={({ section: { title } }) => {
-                        if (title === this.state.firstSection) {
-                            return null;
-                        }
-                        return (
-                            <View style={{ paddingTop: 10, paddingLeft: 4 }}>
-                                <Text style={{ color: style.Theme.colors.font, fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>
-                                    {title}
-                                </Text>
-                            </View>
-                        );
-                    }}
+                    renderItem={this.renderItem}
+                    renderSectionHeader={this.renderSection}
                     sections={this.state.list}
-                    keyExtractor={(item, index) => index}
+                    keyExtractor={this.keyExtract}
                     initialNumToRender={20}
                     onEndReachedThreshold={0.1}
                     onRefresh={this.refreshList}
                     refreshing={this.state.refreshing}
                     stickySectionHeadersEnabled={false}
                     viewabilityConfig={{
-                        itemVisiblePercentThreshold: 10,
+                        itemVisiblePercentThreshold: 1,
                     }}
                     onViewableItemsChanged={this.updateSectionTitle}
                 />
@@ -351,7 +338,9 @@ class Program extends React.Component {
                         <View style={{ flexShrink: 1, height: 2, backgroundColor: '#FFF', width: '100%' }}/>
                     </View>
                     <View style={{ alignSelf: 'stretch' }}>
-                        <Text>{this.state.sectionTitle}</Text>
+                        <Text style={{ color: style.Theme.colors.font, fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>
+                            {this.state.sectionTitle}
+                        </Text>
                     </View>
                     {content}
                 </View>
