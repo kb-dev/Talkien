@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableHighlight, View } from 'react-native';
+import { ScrollView, Text, TouchableHighlight, View } from 'react-native';
 import { MapView, Svg } from 'expo';
 
 import style from '../Style';
@@ -94,7 +94,7 @@ export default class Event extends React.PureComponent {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
                     <BackButton backAction={this.props.navigation.goBack} title={'Recherche'}/>
                 </View>
-                <View style={style.Event.view}>
+                <ScrollView style={style.Event.view}>
                     <View style={style.Event.titleView}>
                         <Text style={style.Event.title}>{name}</Text>
                     </View>
@@ -157,7 +157,7 @@ export default class Event extends React.PureComponent {
                             />
                         </View>
                     </TouchableHighlight>
-                </View>
+                </ScrollView>
             </View>
         );
     }

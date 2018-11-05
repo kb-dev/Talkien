@@ -14,6 +14,7 @@ export default class TalkRow extends React.PureComponent {
     static propTypes = {
         data: PropTypes.object.isRequired,
         openTalk: PropTypes.func.isRequired,
+        isLast: PropTypes.bool,
     };
 
     constructor(props) {
@@ -40,30 +41,35 @@ export default class TalkRow extends React.PureComponent {
     }
     render() {
         const { name, location, category, lang, description } = this.props.data;
+        let marginBottom = 0;
+        if (this.props.isLast) {
+            marginBottom = 60;
+        }
+
         return (
-            <TouchableHighlight underlayColor={style.Theme.overlayColor} onPress={this._onPress} style={{ marginHorizontal: 8, marginTop: 8 }}>
-                <View
-                    style={{
-                        backgroundColor: 'rgba(0,0,0,0.3)',
-                        shadowOffset: {
-                            width: 0,
-                            height: 1,
-                        },
-                        shadowOpacity: 1,
-                        shadowColor: 'rgba(0,0,0,0.3)',
-                        borderRadius: 2,
-                        padding: 12,
-                    }}>
+            <TouchableHighlight
+                underlayColor={style.Theme.overlayColor}
+                onPress={this._onPress}
+                style={[{ marginHorizontal: 28 }, { marginBottom }]}>
+                <View style={style.TalkRow.view}>
                     <Text style={[{ fontSize: 16, color: style.Theme.colors.font }]}>{name}</Text>
-                    <View style={{ paddingVertical: 8 }}>
-                        <Text
-                            style={[style.Theme.font.light, { fontSize: 14, color: style.Theme.colors.font }]}
-                            numberOfLines={3}
-                            ellipsizeMode={'tail'}>
-                            {description}
-                        </Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {description && (
+                        <View style={{ paddingVertical: 8 }}>
+                            <Text
+                                style={[style.Theme.font.light, { fontSize: 14, color: style.Theme.colors.font }]}
+                                numberOfLines={3}
+                                ellipsizeMode={'tail'}>
+                                {description}
+                            </Text>
+                        </View>
+                    )}
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignSelf: 'stretch',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                        }}>
                         {location && (
                             <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
                                 <Entypo

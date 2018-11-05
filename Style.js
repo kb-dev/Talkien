@@ -4,6 +4,7 @@ const Palette = {
     white: '#FFF',
     black: '#000',
     blue: '#0dadb0',
+    darkBlue: '#304FFE',
     orange: '#FF852E',
     pink: '#E049A6',
 };
@@ -21,6 +22,7 @@ const Theme = {
         listBackground: '#ffb996',
         iconColor: '#ff3c3c',
         link: Palette.blue,
+        actionButton: Palette.darkBlue,
     },
     gradient: {
         start: '#FF852E',
@@ -189,14 +191,39 @@ const Talk = StyleSheet.create({
     },
     view: {
         flex: 1,
-        paddingHorizontal: 20,
     },
     title: {
         fontSize: 24,
         color: Theme.colors.font,
     },
+    header: {
+        paddingHorizontal: 20,
+    },
     titleView: {
         marginBottom: 4,
+        flexDirection: 'row',
+        alignSelf: 'stretch',
+        alignItems: 'center',
+    },
+    scrollView: {
+        paddingHorizontal: 20,
+    },
+    description: {
+        // ...Block.style,
+        padding: 8,
+        marginVertical: 8,
+    },
+    details: {
+        paddingVertical: 8,
+        paddingBottom: 72,
+    },
+    button: {
+        ...Block.style,
+        padding: 4,
+    },
+    hours: {
+        fontSize: 18,
+        color: Theme.colors.font,
     },
 });
 
@@ -206,7 +233,6 @@ const Program = StyleSheet.create({
     },
     view: {
         flex: 1,
-        paddingHorizontal: 20,
     },
 });
 
@@ -277,4 +303,26 @@ const NavBar = StyleSheet.create({
     },
 });
 
-export default { Theme, About, Home, BackButton, StatusBar, Offline, Talk, Event, Program, EventRow, Gradient, ActivityIndicator, NavBar };
+const TalkRow = StyleSheet.create({
+    view: {
+        ...Block.style,
+        padding: 12,
+    },
+});
+
+export default {
+    Theme,
+    About,
+    Home,
+    BackButton,
+    StatusBar,
+    Offline,
+    Talk,
+    Event,
+    Program,
+    EventRow,
+    Gradient,
+    ActivityIndicator,
+    NavBar,
+    TalkRow,
+};

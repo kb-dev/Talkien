@@ -30,6 +30,8 @@ class Program extends React.Component {
             error: false,
             sectionTitle: null,
             firstSection: null,
+            nextSection: null,
+            length: null,
         };
 
         this.openTalk = this.openTalk.bind(this);
@@ -220,30 +222,31 @@ class Program extends React.Component {
         if (list !== null) {
             const sectionsIndex = {};
             const sections = [];
-            let index = 0;
-            list.forEach((talk) => {
+            let sectionIndex = 0;
+            list.forEach((talk, index) => {
                 const sectionId = `${talk.startDate}-${talk.endDate}`;
+                talk.index = index;
 
                 if (sectionsIndex[sectionId]) {
                     sections[sectionsIndex[sectionId]].data.push(talk);
                 } else {
-                    sectionsIndex[sectionId] = index;
+                    sectionsIndex[sectionId] = sectionIndex;
                     const title = `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`;
                     if (this.state.firstSection === null) {
                         this.setState({ firstSection: title, sectionTitle: title });
                     }
-                    sections[index] = {
+                    sections[sectionIndex] = {
                         title,
                         data: [talk],
                         timestamp: moment(talk.startDate).valueOf(),
                     };
-                    index++;
+                    sectionIndex++;
                 }
             });
 
             sections.sort((a, b) => a.timestamp - b.timestamp);
 
-            this.setState({ list: sections, refreshing: false });
+            this.setState({ list: sections, length: list.length, refreshing: false });
         }
     }
 
@@ -273,7 +276,15 @@ class Program extends React.Component {
     }
 
     renderItem = ({ item }) => (
-        <TalkRow name={item.name} location={item.location} startDate={item.startDate} lang={item.lang} data={item} openTalk={this.openTalk}/>
+        <TalkRow
+            name={item.name}
+            location={item.location}
+            startDate={item.startDate}
+            lang={item.lang}
+            data={item}
+            openTalk={this.openTalk}
+            isLast={item.index === this.state.length - 1}
+        />
     );
 
     renderSection = ({ section: { title } }) => {
@@ -281,13 +292,15 @@ class Program extends React.Component {
             return null;
         }
         return (
-            <View style={{ paddingTop: 10, paddingLeft: 4 }}>
-                <Text style={{ color: style.Theme.colors.font, fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>{title}</Text>
+            <View style={{ paddingTop: 14, paddingBottom: 4 }}>
+                <Text style={{ color: style.Theme.colors.font, fontSize: 20, textAlign: 'center' }}>{title}</Text>
             </View>
         );
     };
 
-    keyExtract = (item, index) => index;
+    renderSeparator = () => <View style={{ height: 14 }}/>;
+
+    keyExtract = (item) => item.index;
 
     render() {
         let content = null;
@@ -315,6 +328,7 @@ class Program extends React.Component {
                     onRefresh={this.refreshList}
                     refreshing={this.state.refreshing}
                     stickySectionHeadersEnabled={false}
+                    ItemSeparatorComponent={this.renderSeparator}
                     viewabilityConfig={{
                         itemVisiblePercentThreshold: 1,
                     }}
@@ -328,19 +342,17 @@ class Program extends React.Component {
                     <BackButton backAction={this.props.navigation.goBack} title={this.state.eventName}/>
                 </View>
                 <View style={[style.Program.view]}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }}>
                         <View style={{ height: 2, flexShrink: 1, backgroundColor: '#FFF', width: '100%' }}/>
                         <View style={{ flexGrow: 1, marginHorizontal: 8 }}>
-                            <Text style={{ color: '#FFF', fontSize: 24, ...style.Theme.font.light }}>
+                            <Text style={{ color: style.Theme.colors.font, fontSize: 24, ...style.Theme.font.light }}>
                                 {capitalize(moment(this.state.startDate).format('dddd D MMMM'))}
                             </Text>
                         </View>
                         <View style={{ flexShrink: 1, height: 2, backgroundColor: '#FFF', width: '100%' }}/>
                     </View>
-                    <View style={{ alignSelf: 'stretch' }}>
-                        <Text style={{ color: style.Theme.colors.font, fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>
-                            {this.state.sectionTitle}
-                        </Text>
+                    <View style={{ alignSelf: 'stretch', paddingTop: 10, paddingBottom: 2 }}>
+                        <Text style={{ color: style.Theme.colors.font, fontSize: 20, textAlign: 'center' }}>{this.state.sectionTitle}</Text>
                     </View>
                     {content}
                 </View>

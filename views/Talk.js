@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableHighlight, View } from 'react-native';
 import { Calendar, Permissions } from 'expo';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import Toast from 'react-native-root-toast';
@@ -149,23 +149,38 @@ class Talk extends React.Component {
         const color = style.Theme.colors.font;
 
         let action = (
-            <TouchableOpacity onPress={this.addEventToCalendar} style={{ marginHorizontal: 8, marginTop: 8 }} disabled={this.state.disabled}>
-                <View style={{ alignSelf: 'stretch', borderColor: '#FFF', borderWidth: 1, padding: 4 }}>
-                    <Text style={{ textAlign: 'center', color, fontSize: 16 }}>Ajouter au calendrier</Text>
-                </View>
-            </TouchableOpacity>
+            <TouchableHighlight
+                underlayColor={style.Theme.overlayColor}
+                onPress={this.addEventToCalendar}
+                style={{
+                    position: 'absolute',
+                    bottom: 10,
+                    right: 8,
+                    backgroundColor: style.Theme.colors.actionButton,
+                    padding: 8,
+                    borderRadius: 40,
+                }}
+                disabled={this.state.disabled}>
+                <MaterialCommunityIcons name="calendar-plus" size={32} style={{ width: 32, height: 32, color }}/>
+            </TouchableHighlight>
         );
 
         if (this.state.eventId) {
             action = (
-                <TouchableOpacity
+                <TouchableHighlight
+                    underlayColor={style.Theme.overlayColor}
                     onPress={this.deleteEventFromCalendar}
-                    style={{ marginHorizontal: 8, marginTop: 8 }}
-                    disabled={this.state.disabled}>
-                    <View style={{ alignSelf: 'stretch', borderColor: '#FFF', borderWidth: 1, padding: 4 }}>
-                        <Text style={{ textAlign: 'center', color, fontSize: 16 }}>Supprimer du calendrier</Text>
-                    </View>
-                </TouchableOpacity>
+                    disabled={this.state.disabled}
+                    style={{
+                        position: 'absolute',
+                        bottom: 10,
+                        right: 8,
+                        backgroundColor: style.Theme.colors.actionButton,
+                        padding: 8,
+                        borderRadius: 40,
+                    }}>
+                    <MaterialCommunityIcons name="calendar-remove" size={32} style={{ width: 32, height: 32, color }}/>
+                </TouchableHighlight>
             );
         }
 
@@ -175,31 +190,61 @@ class Talk extends React.Component {
                     <BackButton backAction={this.props.navigation.goBack} title={'Programme'}/>
                 </View>
                 <View style={style.Talk.view}>
-                    <View style={style.Talk.titleView}>
-                        <Text style={style.Talk.title}>{this._name}</Text>
-                    </View>
-                    <View style={{ margin: 4 }}>
-                        <Text style={{ textAlign: 'justify', color }}>{description}</Text>
-                    </View>
-                    {location && (
-                        <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                            <Entypo name="location" size={14} style={{ width: 14, height: 14, marginRight: 4, color }}/>
-                            <Text style={{ color }}>{location}</Text>
+                    <View style={style.Talk.header}>
+                        <View style={style.Talk.titleView}>
+                            <View
+                                style={{
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    alignSelf: 'stretch',
+                                    marginRight: 16,
+                                }}>
+                                <Entypo name="blackboard" size={24} style={{ width: 24, height: 24, color }}/>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={style.Talk.title}>{this._name}</Text>
+                            </View>
                         </View>
-                    )}
-                    {category && (
-                        <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                            <Entypo name="tag" size={14} style={{ width: 14, height: 14, marginRight: 4, color }}/>
-                            <Text style={{ fontSize: 14, fontWeight: '200', color }}>{category}</Text>
+                        <View style={style.Talk.details}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                <Entypo name="clock" size={20} style={{ width: 20, height: 24, marginRight: 16, color }}/>
+                                <Text style={style.Talk.hours}>
+                                    {moment(startDate).format('HH:mm')} - {moment(endDate).format('HH:mm')}
+                                </Text>
+                            </View>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    alignSelf: 'stretch',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}>
+                                {location && (
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Entypo name="location" size={20} style={{ width: 20, height: 20, marginRight: 16, color }}/>
+                                        <Text style={{ fontSize: 18, fontWeight: '200', color }}>{location}</Text>
+                                    </View>
+                                )}
+                                {category && (
+                                    <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
+                                        <Entypo name="tag" size={20} style={{ width: 20, height: 20, marginRight: 16, color }}/>
+                                        <Text style={{ fontSize: 18, fontWeight: '200', color }}>{category}</Text>
+                                    </View>
+                                )}
+                            </View>
+                            {action}
                         </View>
-                    )}
-                    <View>
-                        <Text style={{ color }}>Début : {moment(startDate).format('HH:mm')}</Text>
                     </View>
-                    <View>
-                        <Text style={{ color }}>Fin : {moment(endDate).format('HH:mm')}</Text>
-                    </View>
-                    <View>{action}</View>
+                    <ScrollView style={style.Talk.scrollView}>
+                        {description && (
+                            <View style={style.Talk.description}>
+                                <Text style={{ color, fontSize: 16 }}>{description}</Text>
+                            </View>
+                        )}
+
+                        <View style={{ height: 60 }}/>
+                    </ScrollView>
                 </View>
             </View>
         );

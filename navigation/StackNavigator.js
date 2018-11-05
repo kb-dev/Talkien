@@ -13,7 +13,6 @@ import WebBrowser from '../views/WebBrowser';
 import SearchIcon from '../components/icons/Search';
 // Misc
 import style from '../Style';
-import CursorIcon from '../components/icons/Cursor';
 import CalendarIcon from '../components/icons/Calendar';
 import SettingsIcon from '../components/icons/Settings';
 
@@ -115,22 +114,27 @@ export default class App extends React.Component {
     }
 
     render() {
-        let borderStyle = {
+        let specificStyle = {
             borderTopLeftRadius: 5,
             borderTopRightRadius: 5,
         };
+
         if (Platform.OS === 'ios') {
-            console.log(Constants.deviceName);
             if (Constants.deviceName === 'iPhone X' || Constants.deviceName === 'iPhone XS' || Constants.deviceName === 'iPhone XR') {
-                borderStyle = {
-                    borderRadius: 25,
+                specificStyle = {
+                    borderRadius: 16,
                     paddingHorizontal: 16,
                 };
             }
         }
 
+        const selected = {
+            borderBottomWidth: 4,
+            borderBottomColor: '#FFF',
+        };
+
         let navBar = (
-            <SafeAreaView style={{ position: 'absolute', bottom: 0, alignSelf: 'center', elevation: 1 }}>
+            <SafeAreaView style={{ position: 'absolute', bottom: 0, alignSelf: 'center' }}>
                 <View
                     style={[
                         {
@@ -138,39 +142,52 @@ export default class App extends React.Component {
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            shadowColor: '#000',
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.5,
-                            shadowRadius: 2,
+                            // shadowRadius: 2,
+
+                            shadowOffset: {
+                                width: 0,
+                                height: 1,
+                            },
+                            shadowOpacity: 1,
+                            shadowColor: 'rgba(0,0,0,0.3)',
+                            elevation: 5,
                         },
-                        borderStyle,
+                        specificStyle,
                     ]}>
                     <TouchableOpacity
                         onPress={this._onPressHome}
-                        style={{
-                            paddingTop: 8,
-                            paddingHorizontal: 16,
-                        }}>
+                        style={[
+                            {
+                                padding: 8,
+                                marginHorizontal: 4,
+                            },
+                            this.state.screen === 'Home' ? selected : {},
+                        ]}>
                         <SearchIcon/>
-                        {this.state.screen === 'Home' ? <CursorIcon/> : <View style={{ height: 14, width: 36 }}/>}
                     </TouchableOpacity>
                     <TouchableOpacity
+                        disabled={true}
                         onPress={this._onPressCalendar}
-                        style={{
-                            paddingTop: 8,
-                            paddingHorizontal: 16,
-                        }}>
+                        style={[
+                            {
+                                padding: 8,
+                                marginHorizontal: 4,
+                                opacity: 0.5,
+                            },
+                            this.state.screen === 'Calendar' ? selected : {},
+                        ]}>
                         <CalendarIcon/>
-                        {this.state.screen === 'Calendar' ? <CursorIcon/> : <View style={{ height: 14, width: 36 }}/>}
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={this._onPressSettings}
-                        style={{
-                            paddingTop: 8,
-                            paddingHorizontal: 16,
-                        }}>
+                        style={[
+                            {
+                                padding: 8,
+                                marginHorizontal: 4,
+                            },
+                            this.state.screen === 'About' ? selected : {},
+                        ]}>
                         <SettingsIcon/>
-                        {this.state.screen === 'About' ? <CursorIcon/> : <View style={{ height: 14, width: 36 }}/>}
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
