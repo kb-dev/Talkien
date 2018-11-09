@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text, TouchableHighlight, View } from 'react-native';
+import { Image, Linking, Text, TouchableHighlight, View } from 'react-native';
 import { MapView, Svg } from 'expo';
 
 import style from '../Style';
@@ -52,6 +52,22 @@ export default class Event extends React.PureComponent {
         super(props);
 
         this.openProgram = this.openProgram.bind(this);
+        this.onPressGoogleMaps = this.onPressGoogleMaps.bind(this);
+    }
+
+    onPressGoogleMaps() {
+        const { latitude, longitude } = this.props.navigation.state.params.data.location;
+        const link = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+
+        Linking.canOpenURL(link)
+            .then((supported) => {
+                if (!supported) {
+                    console.warn(`Can't handle url: ${link}`);
+                } else {
+                    return Linking.openURL(link);
+                }
+            })
+            .catch((err) => console.error('An error occurred', err));
     }
 
     openProgram() {
@@ -103,7 +119,9 @@ export default class Event extends React.PureComponent {
                             <Text style={[style.Event.defaultText, style.Event.date]}>{date}</Text>
                         </View>
                         <Text style={[style.Event.defaultText]}>{description}</Text>
-                        <Text style={[style.Event.defaultText]}>{longDescription}</Text>
+                        <Text style={[style.Event.defaultText]} numberOfLines={4} ellipsizeMode={'tail'}>
+                            {longDescription}
+                        </Text>
                         <View
                             style={{
                                 flexDirection: 'row',
@@ -119,40 +137,57 @@ export default class Event extends React.PureComponent {
                             <Text style={[style.Event.defaultText]}>{address}</Text>
                             <Text style={[style.Event.defaultText, style.Event.fullAddress]}>{fullAddress}</Text>
                         </View>
-                        <MapView
-                            style={{ height: 10, flexGrow: 1 }}
-                            provider={MapView.PROVIDER_GOOGLE}
-                            initialRegion={{
-                                latitude: location.latitude,
-                                longitude: location.longitude,
-                                latitudeDelta: 0.0025,
-                                longitudeDelta: 0.0025,
-                            }}
-                            customMapStyle={mapStyle}
-                            showsMyLocationButton={false}
-                            loadingEnabled={true}
-                            showsCompass={true}>
-                            <MapView.Marker
-                                coordinate={{
+                        <View style={{ flexGrow: 1, position: 'relative' }}>
+                            <MapView
+                                style={{ height: 10, flexGrow: 1 }}
+                                provider={MapView.PROVIDER_GOOGLE}
+                                initialRegion={{
                                     latitude: location.latitude,
                                     longitude: location.longitude,
-                                }}>
-                                <View
-                                    style={{
-                                        flexDirection: 'column',
-                                        justifyContent: 'flex-start',
-                                        alignItems: 'center',
+                                    latitudeDelta: 0.0025,
+                                    longitudeDelta: 0.0025,
+                                }}
+                                customMapStyle={mapStyle}
+                                showsMyLocationButton={false}
+                                loadingEnabled={true}
+                                showsCompass={true}>
+                                <MapView.Marker
+                                    coordinate={{
+                                        latitude: location.latitude,
+                                        longitude: location.longitude,
                                     }}>
-                                    <Image
-                                        style={{ width: 50, height: 50 }}
-                                        source={require('../assets/icon.png')}
-                                    />
-                                    <Svg height={24} width={18}>
-                                        <Svg.Polygon points="0,0 9,24 18,0" fill="#E57373"/>
-                                    </Svg>
-                                </View>
-                            </MapView.Marker>
-                        </MapView>
+                                    <View
+                                        style={{
+                                            flexDirection: 'column',
+                                            justifyContent: 'flex-start',
+                                            alignItems: 'center',
+                                        }}>
+                                        <View
+                                            style={{
+                                                flexDirection: 'column',
+                                                justifyContent: 'flex-start',
+                                                alignItems: 'center',
+                                                backgroundColor: style.Theme.colors.primary,
+                                                padding: 10,
+                                                borderRadius: 30,
+                                            }}>
+                                            <View style={{ height: 12, width: 12, backgroundColor: '#FFF', borderRadius: 20 }}/>
+                                        </View>
+                                        <Svg height={12} width={8} style={{ marginTop: -1 }}>
+                                            <Svg.Polygon points="0,0 4,12 8,0" fill={style.Theme.colors.primary}/>
+                                        </Svg>
+                                    </View>
+                                </MapView.Marker>
+                            </MapView>
+                            <View style={{ position: 'absolute', top: 0, right: 0 }}>
+                                <TouchableHighlight
+                                    underlayColor={style.Theme.overlayColor}
+                                    onPress={this.onPressGoogleMaps}
+                                    style={{ alignSelf: 'stretch', backgroundColor: 'rgba(255,255,255,0.5)', margin: 4, padding: 4 }}>
+                                    <Image style={{ width: 32, height: 32 }} source={require('../assets/gmaps.png')}/>
+                                </TouchableHighlight>
+                            </View>
+                        </View>
                     </View>
                     <TouchableHighlight onPress={this.openProgram} underlayColor={style.Theme.overlayColor}>
                         <View style={style.Event.button}>

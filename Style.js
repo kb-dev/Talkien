@@ -255,7 +255,7 @@ const Event = StyleSheet.create({
     view: {
         flex: 1,
         paddingHorizontal: 20,
-        marginBottom: 60,
+        marginBottom: 76,
     },
     titleView: {
         paddingTop: 16,

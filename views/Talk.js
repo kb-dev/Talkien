@@ -147,7 +147,7 @@ class Talk extends React.Component {
     }
 
     render() {
-        const { location, description, category, startDate, endDate } = this._data;
+        const { location, description, category, startDate, endDate, speakers } = this._data;
         const color = style.Theme.colors.font;
 
         let action = (
@@ -230,6 +230,15 @@ class Talk extends React.Component {
                                 <Text style={{ color, fontSize: 16 }}>{description}</Text>
                             </View>
                         )}
+                        <View style={style.Talk.description}>
+                            {speakers && <Text style={{ color, fontSize: 16 }}>Présenté par : </Text>}
+                            {speakers &&
+                            speakers.map((speaker) => (
+                                <Text key={speaker.name} style={{ color, fontSize: 16 }}>
+                                    - {speaker.name} {speaker.company ? `(${speaker.company})` : ''}
+                                </Text>
+                            ))}
+                        </View>
 
                         <View style={{ height: 60 }}/>
                     </ScrollView>

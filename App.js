@@ -59,7 +59,7 @@ export default class App extends React.Component {
     }
 
     _loadAssetsAsync() {
-        const imageAssets = cacheImages([require('./assets/icon.png')]);
+        const imageAssets = cacheImages([require('./assets/gmaps.png')]);
 
         const fontAssets = cacheFonts([
             FontAwesome.font,
