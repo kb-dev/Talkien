@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, TouchableHighlight, View } from 'react-native';
+import { Text, TouchableHighlight, View } from 'react-native';
 import { MapView, Svg } from 'expo';
 
 import style from '../Style';
@@ -97,7 +97,7 @@ export default class Event extends React.PureComponent {
                 <View style={style.Event.titleView}>
                     <Text style={style.Event.title}>{name}</Text>
                 </View>
-                <ScrollView style={style.Event.view}>
+                <View style={style.Event.view}>
                     <View style={style.Event.descriptionView}>
                         <View style={style.Event.dateView}>
                             <Text style={[style.Event.defaultText, style.Event.date]}>{date}</Text>
@@ -120,7 +120,7 @@ export default class Event extends React.PureComponent {
                             <Text style={[style.Event.defaultText, style.Event.fullAddress]}>{fullAddress}</Text>
                         </View>
                         <MapView
-                            style={{ height: 206 }}
+                            style={{ height: 10, flexGrow: 1 }}
                             provider={MapView.PROVIDER_GOOGLE}
                             initialRegion={{
                                 latitude: location.latitude,
@@ -164,8 +164,7 @@ export default class Event extends React.PureComponent {
                             />
                         </View>
                     </TouchableHighlight>
-                    <View style={{ height: 60 }}/>
-                </ScrollView>
+                </View>
             </View>
         );
     }

@@ -255,6 +255,7 @@ const Event = StyleSheet.create({
     view: {
         flex: 1,
         paddingHorizontal: 20,
+        marginBottom: 60,
     },
     titleView: {
         paddingTop: 16,
@@ -269,6 +270,7 @@ const Event = StyleSheet.create({
     descriptionView: {
         ...Block.style,
         padding: 12,
+        // flex: 1,
     },
     button: {
         ...Block.style,
@@ -276,10 +278,12 @@ const Event = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        // flex: 1,
     },
     locationView: {
         ...Block.style,
         marginVertical: 12,
+        flex: 1,
     },
     locationText: {
         padding: 12,

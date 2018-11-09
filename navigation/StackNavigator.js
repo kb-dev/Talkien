@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Easing, Platform, SafeAreaView, StatusBar, TouchableOpacity, View } from 'react-native';
+import { Animated, BackHandler, Easing, Platform, SafeAreaView, StatusBar, TouchableOpacity, View } from 'react-native';
 import { Constants, LinearGradient } from 'expo';
 import { createStackNavigator, NavigationActions } from 'react-navigation';
 // Views
@@ -119,6 +119,14 @@ export default class App extends React.Component {
     }
 
     render() {
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            if (this.state.screen !== 'Home') {
+                this.navigator && this.navigator.dispatch(NavigationActions.back());
+                return true;
+            }
+            return false;
+        });
+
         let specificStyle = {
             borderTopLeftRadius: 15,
             borderTopRightRadius: 15,
