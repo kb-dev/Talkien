@@ -1,5 +1,3 @@
-import darkMode from './darkMode';
+import events from './events';
 
-export default {
-    darkMode,
-};
+export default { events };

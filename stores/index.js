@@ -1,13 +1,13 @@
 import { createStore } from 'redux';
 import { persistCombineReducers, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { AsyncStorage } from 'react-native';
 
 import rootReducer from './../reducers';
 
 const config = {
-    timeout: 10000,
-    key: 'root',
-    storage,
+    timeout: 20000,
+    key: 'root-v4',
+    storage: AsyncStorage,
 };
 const reducer = persistCombineReducers(config, rootReducer);
 

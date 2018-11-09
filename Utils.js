@@ -36,6 +36,20 @@ function capitalize(string) {
     return words.join(' ');
 }
 
+function cleanMarkdown(string) {
+    const boldRegex = new RegExp('[*]{2}(.*)[*]{2}', 'gim');
+    const italicRegex = new RegExp('_(.*)_', 'gim');
+    const linkRegex = new RegExp('(?:__|[*#])|\\[(.*?)\\]\\(.*?\\)', 'gim');
+    return string
+        .replace(linkRegex, '$1')
+        .replace(italicRegex, '$1')
+        .replace(boldRegex, '$1');
+}
+
+function generateChecksum(eventId, startDate, endDate, location, name) {
+    return `${eventId}|${startDate}-${endDate}@${location}#${name}`;
+}
+
 function compareDate(a, b) {
     let momentA = a;
     let momentB = b;
@@ -55,4 +69,4 @@ function compareDate(a, b) {
     return 0;
 }
 
-export { compareDate, upperCaseFirstLetter, isArraysEquals, capitalize, capitalizeFirstLetter };
+export { compareDate, upperCaseFirstLetter, isArraysEquals, capitalize, capitalizeFirstLetter, cleanMarkdown, generateChecksum };

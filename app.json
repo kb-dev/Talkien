@@ -9,28 +9,49 @@
       "ios",
       "android"
     ],
-    "version": "0.0.1",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/talkien_android.png",
     "splash": {
+      "image": "./assets/splash.png",
       "backgroundColor": "#ff602c"
-    },
-    "android": {
-      "permissions": [
-        "READ_CALENDAR",
-        "WRITE_CALENDAR"
-      ]
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "icon": "./assets/talkien_ios.png",
-      "supportsTablet": true
     },
     "androidStatusBar": {
       "barStyle": "light-content"
     },
+    "android": {
+      "package": "com.kbdev.talkien",
+      "versionCode": 3,
+      "permissions": [
+        "READ_CALENDAR",
+        "WRITE_CALENDAR"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBvXesUyp2oryB0vbDB4Rj8gpek5MDZHdM"
+        }
+      },
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android_foreground.png",
+        "backgroundImage": "./assets/android_background.png"
+      },
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.kbdev.talkien"
+    },
+    "ios": {
+      "icon": "./assets/talkien_ios.png",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kbdev.talkien",
+      "config": {
+        "googleMapsApiKey": "AIzaSyCnklG87Mxg73Q5kA9SNO6yjwy9VMeGREM"
+      }
+    },
+    "locales": {
+      "fr": "./i18n/fr.json",
+      "en": "./i18n/en.json"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "updates": {
       "enabled": false
     }

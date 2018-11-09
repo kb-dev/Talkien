@@ -1,20 +1,27 @@
 import React from 'react';
-import { ActivityIndicator, AsyncStorage, NetInfo, Platform, SectionList, Text, View } from 'react-native';
+import { ActivityIndicator, NetInfo, Platform, SectionList, Text, View } from 'react-native';
 import { Calendar, Permissions } from 'expo';
 import moment from 'moment';
 import Toast from 'react-native-root-toast';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import 'moment/locale/fr';
 
 import TalkRow from '../components/event/TalkRow';
 import style from '../Style';
-import { capitalize } from '../Utils';
+import { capitalize, generateChecksum } from '../Utils';
 import BackButton from '../components/buttons/BackButton';
+import { addEvents } from '../actions';
 
 moment.locale('fr');
 
 class Program extends React.Component {
+    static propTypes = {
+        savedEvents: PropTypes.array,
+        dispatchAddEvents: PropTypes.func,
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -24,7 +31,6 @@ class Program extends React.Component {
             endDate: this.props.navigation.state.params.endDate,
             calendarId: null,
             calendarTitle: `${this.props.navigation.state.params.name} | Talkien`,
-            cacheDate: null,
             list: null,
             refreshing: false,
             error: false,
@@ -32,6 +38,7 @@ class Program extends React.Component {
             firstSection: null,
             nextSection: null,
             length: null,
+            savedEvents: [],
         };
 
         this.openTalk = this.openTalk.bind(this);
@@ -46,119 +53,114 @@ class Program extends React.Component {
         await this.checkCalendar();
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.savedEvents !== prevProps.savedEvents) {
+            const savedEvents = this.props.savedEvents.map((event) => event.checksum);
+            this.setState({ savedEvents });
+        }
+    }
+
     async checkCalendar() {
-        const { status } = await Permissions.askAsync(Permissions.CALENDAR);
-        if (status !== 'granted') {
-            Toast.show(`Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement`, {
-                duration: Toast.durations.LONG,
-                position: Toast.positions.BOTTOM,
-                shadow: true,
-                animation: true,
-                hideOnPress: true,
-                delay: 0,
-            });
-            return;
-        }
+        let savedEvents = [];
 
-        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-        const { calendarTitle } = this.state;
-        let calendarId = null;
-        if (calendars !== null) {
-            const foundCalendar = calendars.find((calendar) => calendar.name === calendarTitle || calendar.title === calendarTitle);
-            if (foundCalendar) {
-                calendarId = foundCalendar.id;
+        const { status } = await Permissions.getAsync(Permissions.CALENDAR);
+
+        if (status === 'granted') {
+            const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+            const { calendarTitle, eventId } = this.state;
+            let calendarId = null;
+            if (calendars !== null) {
+                const foundCalendar = calendars.find((calendar) => calendar.name === calendarTitle || calendar.title === calendarTitle);
+                if (foundCalendar) {
+                    calendarId = foundCalendar.id;
+                }
             }
-            console.log({ calendarId, calendarTitle });
-        }
 
-        if (calendarId) {
-            try {
-                const calendar = await Calendar.getEventsAsync(
-                    [calendarId],
-                    moment(this.state.startDate).toDate(),
-                    moment(this.state.endDate).toDate(),
-                );
-                console.log('getEventsOfCalendar', { calendar });
-            } catch (e) {
-                console.warn(e);
-                Toast.show(`Erreur de lecture du calendrier`, {
-                    duration: Toast.durations.LONG,
-                    position: Toast.positions.BOTTOM,
-                    shadow: true,
-                    animation: true,
-                    hideOnPress: true,
-                    delay: 0,
-                });
-            }
-        } else {
-            try {
-                let calendar = {
-                    title: `${this.state.eventName} | Talkien`,
-                    name: `${this.state.eventName} | Talkien`,
-                    color: '#66b1e6',
-                    entityType: Calendar.EntityTypes.EVENT,
-                    allowsModifications: true,
-                    id: this.state.eventId,
-                    source: {
-                        isLocalAccount: true,
-                        name: 'Talkien',
-                        type: Calendar.SourceType.LOCAL,
-                    },
-                    ownerAccount: 'talkien',
-                    timeZone: 'Europe/Paris',
-                    isVisible: true,
-                    isPrimary: false,
-                    isSynced: false,
-                    allowedAvailabilities: ['busy', 'free'],
-                    allowedReminders: ['default', 'alert', 'email'],
-                    accessLevel: 'owner',
-                    allowedAttendeeTypes: ['none', 'required', 'optional'],
-                };
-
-                if (Platform.OS === 'ios') {
-                    const local = calendars.filter(
-                        (fetchedCalendar) => fetchedCalendar.source && fetchedCalendar.source.type === Calendar.CalendarType.LOCAL,
+            if (calendarId) {
+                try {
+                    const calendarEvents = await Calendar.getEventsAsync(
+                        [calendarId],
+                        moment(this.state.startDate).toDate(),
+                        moment(this.state.endDate).toDate(),
                     );
-                    if (local.length < 1) {
-                        throw new Error('No local calendar found');
-                    }
-
-                    calendar = {
+                    savedEvents = calendarEvents.map((event) => {
+                        return {
+                            checksum: generateChecksum(eventId, event.startDate, event.endDate, event.location, event.title),
+                            eventId,
+                        };
+                    });
+                } catch (e) {
+                    console.warn(e);
+                    Toast.show(`Erreur de lecture du calendrier`, {
+                        duration: Toast.durations.LONG,
+                        position: Toast.positions.BOTTOM,
+                        shadow: true,
+                        animation: true,
+                        hideOnPress: true,
+                        delay: 0,
+                    });
+                }
+            } else {
+                try {
+                    let calendar = {
                         title: `${this.state.eventName} | Talkien`,
+                        name: `${this.state.eventName} | Talkien`,
                         color: '#66b1e6',
                         entityType: Calendar.EntityTypes.EVENT,
                         allowsModifications: true,
-                        allowedAvailabilities: [],
                         id: this.state.eventId,
-                        sourceId: local[0].source.id,
+                        source: {
+                            isLocalAccount: true,
+                            name: 'Talkien',
+                            type: Calendar.SourceType.LOCAL,
+                        },
+                        ownerAccount: 'talkien',
+                        timeZone: 'Europe/Paris',
+                        isVisible: true,
+                        isPrimary: false,
+                        isSynced: false,
+                        allowedAvailabilities: ['busy', 'free'],
+                        allowedReminders: ['default', 'alert', 'email'],
+                        accessLevel: 'owner',
+                        allowedAttendeeTypes: ['none', 'required', 'optional'],
                     };
+
+                    if (Platform.OS === 'ios') {
+                        const local = calendars.filter(
+                            (fetchedCalendar) => fetchedCalendar.source && fetchedCalendar.source.type === Calendar.CalendarType.LOCAL,
+                        );
+                        if (local.length < 1) {
+                            throw new Error('No local calendar found');
+                        }
+
+                        calendar = {
+                            title: `${this.state.eventName} | Talkien`,
+                            color: '#66b1e6',
+                            entityType: Calendar.EntityTypes.EVENT,
+                            allowsModifications: true,
+                            allowedAvailabilities: [],
+                            id: this.state.eventId,
+                            sourceId: local[0].source.id,
+                        };
+                    }
+
+                    calendarId = await Calendar.createCalendarAsync(calendar);
+                } catch (e) {
+                    console.warn(e);
+                    Toast.show(`Erreur de création du calendrier`, {
+                        duration: Toast.durations.LONG,
+                        position: Toast.positions.BOTTOM,
+                        shadow: true,
+                        animation: true,
+                        hideOnPress: true,
+                        delay: 0,
+                    });
                 }
-
-                calendarId = await Calendar.createCalendarAsync(calendar);
-            } catch (e) {
-                console.warn(e);
-                Toast.show(`Erreur de création du calendrier`, {
-                    duration: Toast.durations.LONG,
-                    position: Toast.positions.BOTTOM,
-                    shadow: true,
-                    animation: true,
-                    hideOnPress: true,
-                    delay: 0,
-                });
             }
-        }
 
-        this.setState({ calendarId });
-    }
-
-    async getCache() {
-        let cache = await AsyncStorage.getItem(this.state.eventId);
-        if (cache !== null) {
-            cache = JSON.parse(cache);
-            this.setState({ cacheDate: cache.date });
-            return cache.list;
+            this.props.dispatchAddEvents(savedEvents);
+            await this.setState({ calendarId });
         }
-        return null;
     }
 
     async fetchList() {
@@ -173,41 +175,44 @@ class Program extends React.Component {
                         responseType: 'json',
                     }
                 );
-                this.setState({ error: true, cacheDate: null });
+                await this.setState({ error: false });
                 list = response.data;
-                AsyncStorage.setItem(this.state.eventId, JSON.stringify({ list, date: moment() }));
             } catch (error) {
-                this.setState({ error: true });
-                if (error.response) {
-                    Toast.show(`Le serveur a répondu par une erreur ${error.response.status}`, {
-                        duration: Toast.durations.LONG,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                        delay: 0,
-                    });
-                } else if (error.request) {
-                    Toast.show(`Pas de connexion`, {
-                        duration: Toast.durations.SHORT,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                        delay: 0,
-                    });
+                if (error.response && error.response.status === 404) {
+                    list = [];
                 } else {
-                    Toast.show(`Erreur : ${error.message}`, {
-                        duration: Toast.durations.LONG,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                    });
+                    await this.setState({ error: true });
+                    if (error.response) {
+                        Toast.show(`Le serveur a répondu par une erreur ${error.response.status}`, {
+                            duration: Toast.durations.LONG,
+                            position: Toast.positions.BOTTOM,
+                            shadow: true,
+                            animation: true,
+                            hideOnPress: true,
+                            delay: 0,
+                        });
+                    } else if (error.request) {
+                        Toast.show(`Pas de connexion`, {
+                            duration: Toast.durations.SHORT,
+                            position: Toast.positions.BOTTOM,
+                            shadow: true,
+                            animation: true,
+                            hideOnPress: true,
+                            delay: 0,
+                        });
+                    } else {
+                        Toast.show(`Erreur : ${error.message}`, {
+                            duration: Toast.durations.LONG,
+                            position: Toast.positions.BOTTOM,
+                            shadow: true,
+                            animation: true,
+                            hideOnPress: true,
+                        });
+                    }
                 }
-                list = await this.getCache();
             }
         } else {
+            await this.setState({ error: true });
             Toast.show(`Pas de connexion`, {
                 duration: Toast.durations.SHORT,
                 position: Toast.positions.BOTTOM,
@@ -216,16 +221,16 @@ class Program extends React.Component {
                 hideOnPress: true,
                 delay: 0,
             });
-            list = await this.getCache();
         }
 
         if (list !== null) {
             const sectionsIndex = {};
             const sections = [];
             let sectionIndex = 0;
-            list.forEach((talk, index) => {
+            await list.forEach(async (talk, index) => {
                 const sectionId = `${talk.startDate}-${talk.endDate}`;
                 talk.index = index;
+                talk.checksum = generateChecksum(this.state.eventId, talk.startDate, talk.endDate, talk.location, talk.name);
 
                 if (sectionsIndex[sectionId]) {
                     sections[sectionsIndex[sectionId]].data.push(talk);
@@ -233,7 +238,7 @@ class Program extends React.Component {
                     sectionsIndex[sectionId] = sectionIndex;
                     const title = `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`;
                     if (this.state.firstSection === null) {
-                        this.setState({ firstSection: title, sectionTitle: title });
+                        await this.setState({ firstSection: title, sectionTitle: title });
                     }
                     sections[sectionIndex] = {
                         title,
@@ -246,7 +251,7 @@ class Program extends React.Component {
 
             sections.sort((a, b) => a.timestamp - b.timestamp);
 
-            this.setState({ list: sections, length: list.length, refreshing: false });
+            await this.setState({ list: sections, length: list.length, refreshing: false });
         }
     }
 
@@ -260,6 +265,7 @@ class Program extends React.Component {
         navigate('Talk', {
             name,
             data,
+            eventId: this.state.eventId,
             calendarTitle: this.state.calendarTitle,
             calendarId: this.state.calendarId,
         });
@@ -283,6 +289,7 @@ class Program extends React.Component {
             lang={item.lang}
             data={item}
             openTalk={this.openTalk}
+            isSaved={this.state.savedEvents.indexOf(item.checksum) !== -1}
             isLast={item.index === this.state.length - 1}
         />
     );
@@ -305,7 +312,13 @@ class Program extends React.Component {
     render() {
         let content = null;
 
-        if (this.state.list === null || this.state.sectionTitle === null) {
+        if (this.state.list && this.state.list.length === 0) {
+            content = (
+                <View style={{ alignSelf: 'stretch' }}>
+                    <Text style={{ color: '#FFF', textAlign: 'center' }}>{'Le programme n\'est pas encore disponible.'}</Text>
+                </View>
+            );
+        } else if (this.state.list === null || this.state.sectionTitle === null) {
             if (!this.state.error) {
                 content = (
                     <ActivityIndicator
@@ -363,8 +376,17 @@ class Program extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        themeName: state.darkMode.themeName,
+        savedEvents: state.events.events,
     };
 };
 
-export default connect(mapStateToProps)(Program);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        dispatchAddEvents: (event) => dispatch(addEvents(event)),
+    };
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(Program);

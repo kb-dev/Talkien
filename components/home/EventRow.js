@@ -11,14 +11,14 @@ moment.locale('fr');
 
 export default class EventRow extends React.PureComponent {
     static propTypes = {
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        data: PropTypes.object.isRequired,
+        id: PropTypes.string,
+        name: PropTypes.string,
+        data: PropTypes.object,
         topics: PropTypes.array,
-        colors: PropTypes.array.isRequired,
-        startDate: PropTypes.string.isRequired,
-        endDate: PropTypes.string.isRequired,
-        openEvent: PropTypes.func.isRequired,
+        colors: PropTypes.array,
+        startDate: PropTypes.string,
+        endDate: PropTypes.string,
+        openEvent: PropTypes.func,
     };
 
     constructor(props) {
@@ -35,8 +35,12 @@ export default class EventRow extends React.PureComponent {
     }
 
     render() {
-        const { topics, name, colors } = this.props;
+        const { topics, name, colors, id } = this.props;
         let { startDate, endDate } = this.props;
+
+        if (id === null) {
+            return <View style={{ height: 60 }}/>;
+        }
 
         startDate = moment(startDate);
         endDate = moment(endDate);

@@ -94,18 +94,25 @@ export default class Event extends React.PureComponent {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
                     <BackButton backAction={this.props.navigation.goBack} title={'Recherche'}/>
                 </View>
+                <View style={style.Event.titleView}>
+                    <Text style={style.Event.title}>{name}</Text>
+                </View>
                 <ScrollView style={style.Event.view}>
-                    <View style={style.Event.titleView}>
-                        <Text style={style.Event.title}>{name}</Text>
-                    </View>
                     <View style={style.Event.descriptionView}>
                         <View style={style.Event.dateView}>
                             <Text style={[style.Event.defaultText, style.Event.date]}>{date}</Text>
                         </View>
                         <Text style={[style.Event.defaultText]}>{description}</Text>
                         <Text style={[style.Event.defaultText]}>{longDescription}</Text>
-                        {url && <URLButton url="url" title="Site web" navigation={this.props.navigation}/>}
-                        {bookingUrl && <URLButton url="bookingUrl" title="Réserver sa place" navigation={this.props.navigation}/>}
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                            }}>
+                            {url && <URLButton url={url} title="Site web" navigation={this.props.navigation}/>}
+                            {bookingUrl && <URLButton url={bookingUrl} title="Réserver sa place" navigation={this.props.navigation}/>}
+                        </View>
                     </View>
                     <View style={style.Event.locationView}>
                         <View style={style.Event.locationText}>
@@ -157,6 +164,7 @@ export default class Event extends React.PureComponent {
                             />
                         </View>
                     </TouchableHighlight>
+                    <View style={{ height: 60 }}/>
                 </ScrollView>
             </View>
         );

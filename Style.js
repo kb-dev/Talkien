@@ -22,7 +22,6 @@ const Theme = {
         listBackground: '#ffb996',
         iconColor: '#ff3c3c',
         link: Palette.blue,
-        actionButton: Palette.darkBlue,
     },
     gradient: {
         start: '#FF852E',
@@ -75,7 +74,9 @@ const About = StyleSheet.create({
     },
     view: {
         flex: 1,
-        padding: 10,
+    },
+    container: {
+        padding: 20,
     },
     content: {
         marginTop: 5,
@@ -218,8 +219,19 @@ const Talk = StyleSheet.create({
         paddingBottom: 72,
     },
     button: {
-        ...Block.style,
-        padding: 4,
+        backgroundColor: Palette.pink,
+        position: 'absolute',
+        bottom: 10,
+        right: 8,
+        padding: 8,
+        borderRadius: 40,
+        elevation: 2,
+        shadowOffset: {
+            width: 2,
+            height: 2,
+        },
+        shadowOpacity: 1,
+        shadowColor: 'rgba(0,0,0,0.6)',
     },
     hours: {
         fontSize: 18,
@@ -245,8 +257,9 @@ const Event = StyleSheet.create({
         paddingHorizontal: 20,
     },
     titleView: {
-        paddingTop: 24,
+        paddingTop: 16,
         paddingBottom: 16,
+        paddingHorizontal: 20,
     },
     title: {
         ...Theme.font.light,
@@ -295,11 +308,25 @@ const ActivityIndicator = {
 const NavBar = StyleSheet.create({
     button: {
         paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderColor: Palette.white,
+        paddingHorizontal: 12,
+        marginHorizontal: 8,
     },
     view: {
         padding: 4,
+    },
+    bar: {
+        backgroundColor: '#FD63B0',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 1,
+        shadowColor: 'rgba(0,0,0,0.3)',
+        elevation: 5,
     },
 });
 

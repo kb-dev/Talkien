@@ -22,7 +22,7 @@ export default class URLButton extends React.PureComponent {
     render() {
         return (
             <TouchableOpacity style={{ alignSelf: 'flex-start' }} onPress={this.openURL}>
-                <Text style={{ color: style.Theme.colors.link }}>{this.props.title}</Text>
+                <Text style={{ color: style.Theme.colors.link, fontSize: 16 }}>{this.props.title}</Text>
             </TouchableOpacity>
         );
     }

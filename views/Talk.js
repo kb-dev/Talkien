@@ -3,22 +3,32 @@ import { ScrollView, Text, TouchableHighlight, View } from 'react-native';
 import { Calendar, Permissions } from 'expo';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 import Toast from 'react-native-root-toast';
 import 'moment/locale/fr';
 
 import style from '../Style';
 import BackButton from '../components/buttons/BackButton';
+import { addEvent, deleteEvent } from '../actions';
+import { generateChecksum } from '../Utils';
 
 moment.locale('fr');
 
 class Talk extends React.Component {
+    static propTypes = {
+        dispatchAddEvent: PropTypes.func,
+        dispatchDeleteEvent: PropTypes.func,
+        savedEvents: PropTypes.array,
+    };
+
     constructor(props) {
         super(props);
-        this.state = { eventId: null, disabled: false };
+        this.state = { calendarEventId: null, disabled: false, saved: false };
 
         this._name = this.props.navigation.state.params.name;
         this._calendarId = this.props.navigation.state.params.calendarId;
+        this._eventId = this.props.navigation.state.params.eventId;
         this._data = this.props.navigation.state.params.data;
         this.addEventToCalendar = this.addEventToCalendar.bind(this);
         this.deleteEventFromCalendar = this.deleteEventFromCalendar.bind(this);
@@ -27,17 +37,11 @@ class Talk extends React.Component {
     addEventToCalendar() {
         requestAnimationFrame(async () => {
             await this.setState({ disabled: true });
-            const { status } = await Permissions.askAsync(Permissions.CALENDAR);
-            if (status !== 'granted') {
-                Toast.show('Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement', {
-                    duration: Toast.durations.LONG,
-                    position: Toast.positions.BOTTOM,
-                    shadow: true,
-                    animation: true,
-                    hideOnPress: true,
-                    delay: 0,
-                });
-            } else {
+
+            const { status } = await Permissions.getAsync(Permissions.CALENDAR);
+            let calendarEventId = null;
+
+            if (status === 'granted') {
                 try {
                     const event = {
                         title: this._name,
@@ -50,8 +54,7 @@ class Talk extends React.Component {
                         notes: this._data.description,
                     };
 
-                    const eventId = await Calendar.createEventAsync(this._calendarId, event);
-                    this.setState({ eventId });
+                    calendarEventId = await Calendar.createEventAsync(this._calendarId, event);
                 } catch (e) {
                     Toast.show('Erreur d\'ajout au calendrier', {
                         duration: Toast.durations.LONG,
@@ -63,27 +66,21 @@ class Talk extends React.Component {
                     });
                 }
             }
-            await this.setState({ disabled: false });
+
+            this.props.dispatchAddEvent({ ...this._data, eventId: this._eventId });
+            await this.setState({ disabled: false, saved: true, calendarEventId });
         });
     }
 
     deleteEventFromCalendar() {
         requestAnimationFrame(async () => {
             await this.setState({ disabled: true });
-            const { status } = await Permissions.askAsync(Permissions.CALENDAR);
-            if (status !== 'granted') {
-                Toast.show('Vous devez accepter les permissions liées au calendrier pour pouvoir supprimer un événement', {
-                    duration: Toast.durations.LONG,
-                    position: Toast.positions.BOTTOM,
-                    shadow: true,
-                    animation: true,
-                    hideOnPress: true,
-                    delay: 0,
-                });
-            } else {
+
+            const { status } = await Permissions.getAsync(Permissions.CALENDAR);
+
+            if (status === 'granted') {
                 try {
-                    await Calendar.deleteEventAsync(this.state.eventId);
-                    await this.setState({ eventId: null, disabled: false });
+                    await Calendar.deleteEventAsync(String(this.state.calendarEventId));
                 } catch (e) {
                     Toast.show('Erreur de suppression de l\'évènement du calendrier', {
                         duration: Toast.durations.LONG,
@@ -93,26 +90,21 @@ class Talk extends React.Component {
                         hideOnPress: true,
                         delay: 0,
                     });
-                    await this.setState({ disabled: false });
                 }
             }
-            await this.setState({ disabled: false });
+
+            this.props.dispatchDeleteEvent({ ...this._data, eventId: this._eventId });
+            await this.setState({ disabled: false, saved: false, calendarEventId: null });
         });
     }
 
     async checkEvent() {
         await this.setState({ disabled: true });
-        const { status } = await Permissions.askAsync(Permissions.CALENDAR);
-        if (status !== 'granted') {
-            Toast.show('Vous devez accepter les permissions liées au calendrier pour pouvoir ajouter un événement', {
-                duration: Toast.durations.LONG,
-                position: Toast.positions.BOTTOM,
-                shadow: true,
-                animation: true,
-                hideOnPress: true,
-                delay: 0,
-            });
-        } else {
+
+        const { status } = await Permissions.getAsync(Permissions.CALENDAR);
+        let { calendarEventId, saved } = this.state;
+
+        if (status === 'granted') {
             try {
                 const searchedEvent = {
                     title: this._name,
@@ -123,9 +115,9 @@ class Talk extends React.Component {
                 const events = await Calendar.getEventsAsync([this._calendarId], searchedEvent.startDate, searchedEvent.endDate);
                 const matchEvents = events.filter((event) => event.title === searchedEvent.title);
                 if (matchEvents && matchEvents.length > 0) {
-                    await this.setState({ eventId: matchEvents[0].id, disabled: false });
+                    calendarEventId = matchEvents[0].id;
+                    saved = true;
                 }
-                await this.setState({ disabled: false });
             } catch (e) {
                 Toast.show('Erreur de lecture du calendrier', {
                     duration: Toast.durations.LONG,
@@ -135,9 +127,19 @@ class Talk extends React.Component {
                     hideOnPress: true,
                     delay: 0,
                 });
-                await this.setState({ disabled: false });
             }
         }
+        if (calendarEventId === null) {
+            const { location, startDate, endDate } = this._data;
+            const foundEvent = this.props.savedEvents.find(
+                (event) => event.checksum === generateChecksum(this._eventId, startDate, endDate, location, this._name),
+            );
+            if (foundEvent) {
+                saved = true;
+            }
+        }
+
+        await this.setState({ disabled: false, calendarEventId, saved });
     }
 
     async componentDidMount() {
@@ -152,33 +154,19 @@ class Talk extends React.Component {
             <TouchableHighlight
                 underlayColor={style.Theme.overlayColor}
                 onPress={this.addEventToCalendar}
-                style={{
-                    position: 'absolute',
-                    bottom: 10,
-                    right: 8,
-                    backgroundColor: style.Theme.colors.actionButton,
-                    padding: 8,
-                    borderRadius: 40,
-                }}
+                style={style.Talk.button}
                 disabled={this.state.disabled}>
                 <MaterialCommunityIcons name="calendar-plus" size={32} style={{ width: 32, height: 32, color }}/>
             </TouchableHighlight>
         );
 
-        if (this.state.eventId) {
+        if (this.state.saved) {
             action = (
                 <TouchableHighlight
                     underlayColor={style.Theme.overlayColor}
                     onPress={this.deleteEventFromCalendar}
                     disabled={this.state.disabled}
-                    style={{
-                        position: 'absolute',
-                        bottom: 10,
-                        right: 8,
-                        backgroundColor: style.Theme.colors.actionButton,
-                        padding: 8,
-                        borderRadius: 40,
-                    }}>
+                    style={style.Talk.button}>
                     <MaterialCommunityIcons name="calendar-remove" size={32} style={{ width: 32, height: 32, color }}/>
                 </TouchableHighlight>
             );
@@ -253,8 +241,18 @@ class Talk extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        themeName: state.darkMode.themeName,
+        savedEvents: state.events.events,
     };
 };
 
-export default connect(mapStateToProps)(Talk);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        dispatchAddEvent: (event) => dispatch(addEvent(event)),
+        dispatchDeleteEvent: (event) => dispatch(deleteEvent(event)),
+    };
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(Talk);

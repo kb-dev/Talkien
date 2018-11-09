@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, TextInput, View } from 'react-native';
-import { connect } from 'react-redux';
+import { Permissions } from 'expo';
 import axios from 'axios';
 import Toast from 'react-native-root-toast';
 import moment from 'moment';
@@ -13,7 +13,7 @@ import style from '../Style';
 
 moment.locale('fr');
 
-class Home extends React.Component {
+export default class Home extends React.Component {
     constructor(props) {
         super(props);
 
@@ -32,6 +32,7 @@ class Home extends React.Component {
     }
 
     async componentDidMount() {
+        await Permissions.askAsync(Permissions.CALENDAR);
         await this.fetchList();
     }
 
@@ -170,7 +171,7 @@ class Home extends React.Component {
                             openEvent={this.openEvent}
                         />
                     )}
-                    data={list.slice(0, 3)}
+                    data={list.slice(0, 3).concat([{ id: null }])}
                     keyExtractor={(item, index) => index.toString()}
                     initialNumToRender={20}
                     onEndReachedThreshold={0.1}
@@ -208,11 +209,3 @@ class Home extends React.Component {
         );
     }
 }
-
-const mapStateToProps = (state) => {
-    return {
-        themeName: state.darkMode.themeName,
-    };
-};
-
-export default connect(mapStateToProps)(Home);

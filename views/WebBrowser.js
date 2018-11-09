@@ -4,7 +4,6 @@ import NavigationBar from 'react-native-navbar';
 import { withNavigation } from 'react-navigation';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { connect } from 'react-redux';
 
 import style from '../Style';
 import BackButton from '../components/buttons/BackButton';
@@ -65,7 +64,7 @@ class WebBrowser extends React.Component {
         Linking.canOpenURL(this.state.url)
             .then((supported) => {
                 if (!supported) {
-                    console.warn(`Can't handle url: ${  this.state.url}`);
+                    console.warn(`Can't handle url: ${this.state.url}`);
                 } else {
                     return Linking.openURL(this.state.url);
                 }
@@ -187,8 +186,4 @@ class WebBrowser extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    themeName: state.darkMode.themeName,
-});
-
-export default connect(mapStateToProps)(withNavigation(WebBrowser));
+export default withNavigation(WebBrowser);

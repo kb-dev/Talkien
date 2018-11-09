@@ -9,6 +9,7 @@ import Event from '../views/Event';
 import Talk from '../views/Talk';
 import Program from '../views/Program';
 import WebBrowser from '../views/WebBrowser';
+import Calendar from '../views/Calendar';
 // Icons
 import SearchIcon from '../components/icons/Search';
 // Misc
@@ -35,6 +36,9 @@ const RootStack = createStackNavigator(
         },
         Talk: {
             screen: Talk,
+        },
+        Calendar: {
+            screen: Calendar,
         },
     },
     {
@@ -104,6 +108,7 @@ export default class App extends React.Component {
 
     _onPressCalendar() {
         requestAnimationFrame(() => {
+            // this.navigator && this.navigator.dispatch(NavigationActions.navigate({ routeName: 'Calendar' }));
         });
     }
 
@@ -115,8 +120,8 @@ export default class App extends React.Component {
 
     render() {
         let specificStyle = {
-            borderTopLeftRadius: 5,
-            borderTopRightRadius: 5,
+            borderTopLeftRadius: 15,
+            borderTopRightRadius: 15,
         };
 
         if (Platform.OS === 'ios') {
@@ -135,58 +140,19 @@ export default class App extends React.Component {
 
         let navBar = (
             <SafeAreaView style={{ position: 'absolute', bottom: 0, alignSelf: 'center' }}>
-                <View
-                    style={[
-                        {
-                            backgroundColor: '#FD63B0',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            // shadowRadius: 2,
-
-                            shadowOffset: {
-                                width: 0,
-                                height: 1,
-                            },
-                            shadowOpacity: 1,
-                            shadowColor: 'rgba(0,0,0,0.3)',
-                            elevation: 5,
-                        },
-                        specificStyle,
-                    ]}>
-                    <TouchableOpacity
-                        onPress={this._onPressHome}
-                        style={[
-                            {
-                                padding: 8,
-                                marginHorizontal: 4,
-                            },
-                            this.state.screen === 'Home' ? selected : {},
-                        ]}>
+                <View style={[style.NavBar.bar, specificStyle]}>
+                    <TouchableOpacity onPress={this._onPressHome} style={[style.NavBar.button, this.state.screen === 'Home' ? selected : {}]}>
                         <SearchIcon/>
                     </TouchableOpacity>
                     <TouchableOpacity
                         disabled={true}
                         onPress={this._onPressCalendar}
-                        style={[
-                            {
-                                padding: 8,
-                                marginHorizontal: 4,
-                                opacity: 0.5,
-                            },
-                            this.state.screen === 'Calendar' ? selected : {},
-                        ]}>
+                        style={[style.NavBar.button, { opacity: 0.5 }, this.state.screen === 'Calendar' ? selected : {}]}>
                         <CalendarIcon/>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={this._onPressSettings}
-                        style={[
-                            {
-                                padding: 8,
-                                marginHorizontal: 4,
-                            },
-                            this.state.screen === 'About' ? selected : {},
-                        ]}>
+                        style={[style.NavBar.button, this.state.screen === 'About' ? selected : {}]}>
                         <SettingsIcon/>
                     </TouchableOpacity>
                 </View>
@@ -196,7 +162,7 @@ export default class App extends React.Component {
         let gradientColors = style.Gradient.default.colors;
         let gradientLocation = style.Gradient.default.location;
 
-        if (this.state.screen === 'Home') {
+        if (this.state.screen === 'Home' || this.state.screen === 'About') {
             gradientColors = style.Gradient.Home.colors;
             gradientLocation = style.Gradient.Home.location;
         } else if (this.state.screen === 'WebBrowser') {

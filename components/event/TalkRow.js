@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TouchableHighlight, View } from 'react-native';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { cleanMarkdown } from '../../Utils';
 
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -14,6 +15,7 @@ export default class TalkRow extends React.PureComponent {
     static propTypes = {
         data: PropTypes.object.isRequired,
         openTalk: PropTypes.func.isRequired,
+        isSaved: PropTypes.bool.isRequired,
         isLast: PropTypes.bool,
     };
 
@@ -40,10 +42,20 @@ export default class TalkRow extends React.PureComponent {
         }
     }
     render() {
-        const { name, location, category, lang, description } = this.props.data;
+        const { name, location, category, lang } = this.props.data;
+        let { description } = this.props.data;
+        if (description) {
+            description = cleanMarkdown(description);
+        }
+
         let marginBottom = 0;
         if (this.props.isLast) {
             marginBottom = 60;
+        }
+
+        let savedStyle = { borderColor: 'transparent', borderWidth: 1 };
+        if (this.props.isSaved) {
+            savedStyle = { borderColor: '#FFD700', borderWidth: 1 };
         }
 
         return (
@@ -51,7 +63,7 @@ export default class TalkRow extends React.PureComponent {
                 underlayColor={style.Theme.overlayColor}
                 onPress={this._onPress}
                 style={[{ marginHorizontal: 28 }, { marginBottom }]}>
-                <View style={style.TalkRow.view}>
+                <View style={[style.TalkRow.view, savedStyle]}>
                     <Text style={[{ fontSize: 16, color: style.Theme.colors.font }]}>{name}</Text>
                     {description && (
                         <View style={{ paddingVertical: 8 }}>
