@@ -59,7 +59,7 @@ export default class App extends React.Component {
     }
 
     _loadAssetsAsync() {
-        const imageAssets = cacheImages([require('./assets/talkien_android.png')]);
+        const imageAssets = cacheImages([require('./assets/icon.png')]);
 
         const fontAssets = cacheFonts([
             FontAwesome.font,

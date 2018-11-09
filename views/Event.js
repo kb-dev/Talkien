@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableHighlight, View } from 'react-native';
+import { Image, Text, TouchableHighlight, View } from 'react-native';
 import { MapView, Svg } from 'expo';
 
 import style from '../Style';
@@ -143,6 +143,10 @@ export default class Event extends React.PureComponent {
                                         justifyContent: 'flex-start',
                                         alignItems: 'center',
                                     }}>
+                                    <Image
+                                        style={{ width: 50, height: 50 }}
+                                        source={require('../assets/icon.png')}
+                                    />
                                     <Svg height={24} width={18}>
                                         <Svg.Polygon points="0,0 9,24 18,0" fill="#E57373"/>
                                     </Svg>
