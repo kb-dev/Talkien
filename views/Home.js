@@ -52,7 +52,7 @@ export default class Home extends React.Component {
         const isConnected = (await NetInfo.getConnectionInfo()) !== 'none';
         if (isConnected) {
             try {
-                const response = await axios.get('https://raw.githubusercontent.com/kb-dev/talkien-events/master/events.json', {
+                const response = await axios.get('https://kb-dev.github.io/talkien-events/events.json', {
                     responseType: 'json',
                 });
                 this.setState({ cacheDate: null });

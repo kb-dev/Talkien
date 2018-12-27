@@ -169,12 +169,9 @@ class Program extends React.Component {
         const isConnected = (await NetInfo.getConnectionInfo()) !== 'none';
         if (isConnected) {
             try {
-                const response = await axios.get(
-                    `https://raw.githubusercontent.com/kb-dev/talkien-events/master/${this.state.eventId}/events.json`,
-                    {
-                        responseType: 'json',
-                    }
-                );
+                const response = await axios.get(`https://kb-dev.github.io/talkien-events/${this.state.eventId}/events.json`, {
+                    responseType: 'json',
+                });
                 await this.setState({ error: false });
                 list = response.data;
             } catch (error) {
