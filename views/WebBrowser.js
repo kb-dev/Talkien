@@ -91,6 +91,8 @@ class WebBrowser extends React.Component {
             javascript = 'window.scrollTo(0,0);';
         }
 
+        const barSize = 40;
+
         return (
             <View style={{ flex: 1, flexDirection: 'column' }}>
                 <NavigationBar
@@ -124,22 +126,22 @@ class WebBrowser extends React.Component {
                     <TouchableOpacity disabled={!this.state.canGoBack} onPress={this.onBack}>
                         <MaterialIcons
                             name="navigate-before"
-                            size={30}
+                            size={barSize}
                             style={{
                                 color: this.state.canGoBack ? style.Theme.colors.icon : style.Theme.colors.disabledIcon,
-                                height: 30,
-                                width: 30,
+                                height: barSize,
+                                width: barSize,
                             }}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity disabled={!this.state.canGoForward} onPress={this.onForward}>
                         <MaterialIcons
                             name="navigate-next"
-                            size={30}
+                            size={barSize}
                             style={{
                                 color: this.state.canGoForward ? style.Theme.colors.icon : style.Theme.colors.disabledIcon,
-                                height: 30,
-                                width: 30,
+                                height: barSize,
+                                width: barSize,
                             }}
                         />
                     </TouchableOpacity>
@@ -147,11 +149,11 @@ class WebBrowser extends React.Component {
                     <TouchableOpacity disabled={this.state.loading} onPress={this.onRefresh}>
                         <MaterialIcons
                             name="refresh"
-                            size={30}
+                            size={barSize}
                             style={{
                                 color: this.state.loading ? style.Theme.colors.disabledIcon : style.Theme.colors.icon,
-                                height: 30,
-                                width: 30,
+                                height: barSize,
+                                width: barSize,
                             }}
                         />
                     </TouchableOpacity>
@@ -168,14 +170,14 @@ class WebBrowser extends React.Component {
                             {Platform.OS === 'ios' ? (
                                 <MaterialCommunityIcons
                                     name="apple-safari"
-                                    size={25}
-                                    style={{ color: style.Theme.colors.icon, height: 25, width: 25 }}
+                                    size={barSize}
+                                    style={{ color: style.Theme.colors.icon, height: barSize, width: barSize }}
                                 />
                             ) : (
                                 <MaterialCommunityIcons
                                     name="google-chrome"
-                                    size={25}
-                                    style={{ color: style.Theme.colors.icon, height: 25, width: 25 }}
+                                    size={barSize}
+                                    style={{ color: style.Theme.colors.icon, height: barSize, width: barSize }}
                                 />
                             )}
                         </View>
