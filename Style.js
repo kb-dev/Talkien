@@ -39,7 +39,7 @@ const Theme = {
 
 const Block = {
     style: {
-        backgroundColor: 'rgba(0,0,0,0.3)',
+        backgroundColor: 'rgba(0,0,0,0.45)',
         shadowOffset: {
             width: 0,
             height: 1,

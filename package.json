@@ -16,7 +16,7 @@
     "moment": "^2.24.0",
     "prop-types": "latest",
     "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.1.tar.gz",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-linear-gradient": "^2.5.3",
     "react-native-navbar": "^2.1.0",
     "react-native-root-toast": "^3.0.2",

@@ -100,7 +100,7 @@ function getActiveColors(navigationState) {
         return getActiveColors(route);
     }
 
-    if (route.params && route.params.data) {
+    if (route.params && route.params.data && route.params.data.colors) {
         return route.params.data.colors;
     }
 

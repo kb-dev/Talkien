@@ -13,6 +13,7 @@ import style from '../Style';
 import { capitalize, generateChecksum } from '../Utils';
 import BackButton from '../components/buttons/BackButton';
 import { addEvents } from '../actions';
+import URLButton from '../components/buttons/URLButton';
 
 moment.locale('fr');
 
@@ -311,8 +312,21 @@ class Program extends React.Component {
 
         if (this.state.list && this.state.list.length === 0) {
             content = (
-                <View style={{ alignSelf: 'stretch' }}>
+                <View
+                    style={{
+                        alignSelf: 'stretch',
+                        padding: 10,
+                        alignItems: 'center',
+                        flex: 1,
+                        flexDirection: 'column',
+                    }}>
                     <Text style={{ color: '#FFF', textAlign: 'center' }}>{'Le programme n\'est pas encore disponible.'}</Text>
+                    <Text style={{ color: '#FFF', textAlign: 'center' }}>
+                        {'Si le programme est disponible, vous pouvez ajouter les conférences sur le repo Github de Talkien :'}
+                    </Text>
+                    <View style={{ flex: 1, margin: 2 }}>
+                        <URLButton url="https://github.com/kb-dev/talkien-events" title="GitHub" navigation={this.props.navigation}/>
+                    </View>
                 </View>
             );
         } else if (this.state.list === null || this.state.sectionTitle === null) {

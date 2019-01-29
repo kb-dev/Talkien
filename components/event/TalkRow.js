@@ -105,7 +105,7 @@ export default class TalkRow extends React.PureComponent {
                                     size={14}
                                     style={{ width: 14, height: 14, marginRight: 4, color: style.Theme.colors.font }}
                                 />
-                                <Text style={{ fontSize: 14, fontWeight: '200' }}>{TalkRow.getFlag(lang)}</Text>
+                                <Text style={{ fontSize: 14, fontWeight: '200', color: '#FFF' }}>{TalkRow.getFlag(lang)}</Text>
                             </View>
                         )}
                     </View>
