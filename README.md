@@ -8,7 +8,7 @@ Use expo client on Android to launch the app : https://expo.io/@hackjack/Talkien
 
 ## Builds
 
-No build is available for now.
+You can install the application on [Android](https://bit.ly/AndroidTalkien) and [iOS](https://bit.ly/iOSTalkien).
 
 ## Development
 
