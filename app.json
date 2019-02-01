@@ -9,7 +9,7 @@
       "ios",
       "android"
     ],
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/talkien_android.png",
     "splash": {
@@ -21,7 +21,7 @@
     },
     "android": {
       "package": "com.kbdev.talkien",
-      "versionCode": 8,
+      "versionCode": 9,
       "permissions": [
         "READ_CALENDAR",
         "WRITE_CALENDAR"
