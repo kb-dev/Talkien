@@ -172,14 +172,14 @@ export default class App extends React.Component {
         });
 
         let specificStyle = {
-            borderTopLeftRadius: 15,
-            borderTopRightRadius: 15,
+            borderTopLeftRadius: 4,
+            borderTopRightRadius: 4,
         };
 
         if (Platform.OS === 'ios') {
             if (Constants.deviceName === 'iPhone X' || Constants.deviceName === 'iPhone XS' || Constants.deviceName === 'iPhone XR') {
                 specificStyle = {
-                    borderRadius: 16,
+                    borderRadius: 4,
                     paddingHorizontal: 16,
                 };
             }
@@ -192,8 +192,35 @@ export default class App extends React.Component {
 
         let navBar = (
             <SafeAreaView style={{ position: 'absolute', bottom: 0, alignSelf: 'center' }}>
-                <View style={[style.NavBar.bar, specificStyle]}>
-                    <TouchableOpacity onPress={this._onPressHome} style={[style.NavBar.button, this.state.screen === 'Home' ? selected : {}]}>
+                <View
+                    style={{
+                        ...style.NavBar.bar,
+                        ...specificStyle,
+                        backgroundColor: '#FFFFFF',
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        opacity: 0.1,
+                    }}
+                />
+                <View
+                    style={{
+                        ...style.NavBar.bar,
+                        ...specificStyle,
+                    }}>
+                    <TouchableOpacity
+                        onPress={this._onPressHome}
+                        style={[
+                            style.NavBar.button,
+                            this.state.screen === 'Home' ||
+                            this.state.screen === 'Event' ||
+                            this.state.screen === 'Program' ||
+                            this.state.screen === 'Talk'
+                                ? selected
+                                : {},
+                        ]}>
                         <SearchIcon />
                     </TouchableOpacity>
                     <TouchableOpacity

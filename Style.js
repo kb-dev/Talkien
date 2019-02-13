@@ -319,7 +319,6 @@ const NavBar = StyleSheet.create({
         padding: 4,
     },
     bar: {
-        backgroundColor: '#FD63B0',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
