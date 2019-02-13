@@ -192,6 +192,7 @@ const Talk = StyleSheet.create({
     },
     view: {
         flex: 1,
+        marginBottom: 70,
     },
     title: {
         fontSize: 24,
@@ -245,6 +246,7 @@ const Program = StyleSheet.create({
     },
     view: {
         flex: 1,
+        marginBottom: 70,
     },
 });
 
