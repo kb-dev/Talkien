@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, Linking, Text, TouchableHighlight, View } from 'react-native';
-import { MapView, Svg } from 'expo';
+import MapView from 'react-native-maps';
+import { Polygon, Svg } from 'react-native-svg';
 
 import style from '../Style';
 import moment from 'moment';
@@ -174,7 +175,7 @@ export default class Event extends React.PureComponent {
                                             <View style={{ height: 12, width: 12, backgroundColor: '#FFF', borderRadius: 20 }}/>
                                         </View>
                                         <Svg height={12} width={8} style={{ marginTop: -1 }}>
-                                            <Svg.Polygon points="0,0 4,12 8,0" fill={style.Theme.colors.primary}/>
+                                            <Polygon points="0,0 4,12 8,0" fill={style.Theme.colors.primary}/>
                                         </Svg>
                                     </View>
                                 </MapView.Marker>

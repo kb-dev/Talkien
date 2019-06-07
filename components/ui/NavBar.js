@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { Constants } from 'expo';
+import Constants from 'expo-constants';
+
 import NavigationBar from 'react-native-navbar';
 import PropTypes from 'prop-types';
 

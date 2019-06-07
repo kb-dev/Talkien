@@ -1,6 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, NetInfo, Platform, SectionList, Text, View } from 'react-native';
-import { Calendar, Permissions } from 'expo';
+import * as Calendar from 'expo-calendar';
+import * as Permissions from 'expo-permissions';
 import moment from 'moment';
 import Toast from 'react-native-root-toast';
 import axios from 'axios';

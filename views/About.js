@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { Constants } from 'expo';
+import Constants from 'expo-constants';
 
 import style from '../Style';
 import URLButton from '../components/buttons/URLButton';

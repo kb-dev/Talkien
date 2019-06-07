@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, TextInput, View } from 'react-native';
-import { Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
 import axios from 'axios';
 import Toast from 'react-native-root-toast';
 import moment from 'moment';
