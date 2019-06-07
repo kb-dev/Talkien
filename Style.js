@@ -166,7 +166,7 @@ const BackButton = StyleSheet.create({
     view: {
         paddingLeft: 16,
         paddingRight: 32,
-        paddingVertical: 8,
+        height: 44,
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
