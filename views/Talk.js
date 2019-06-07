@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, TouchableHighlight, View } from 'react-native';
-import { Calendar, Permissions } from 'expo';
+import * as Calendar from 'expo-calendar';
+import * as Permissions from 'expo-permissions';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';

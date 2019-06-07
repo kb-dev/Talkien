@@ -1,6 +1,8 @@
 import React from 'react';
 import { Image, StatusBar } from 'react-native';
-import { AppLoading, Asset, Font, SplashScreen } from 'expo';
+import { AppLoading, SplashScreen } from 'expo';
+import { Asset } from 'expo-asset';
+import * as Font from 'expo-font';
 import { Entypo, Feather, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/es/integration/react';

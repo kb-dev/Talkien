@@ -1,6 +1,7 @@
 import React from 'react';
 import { Animated, BackHandler, Easing, Platform, SafeAreaView, StatusBar, TouchableOpacity, View } from 'react-native';
-import { Constants, LinearGradient } from 'expo';
+import Constants from 'expo-constants';
+import { LinearGradient } from 'expo-linear-gradient';
 import { createAppContainer, createStackNavigator, NavigationActions } from 'react-navigation';
 // Views
 import Home from '../views/Home';

@@ -5,7 +5,7 @@ import moment from 'moment';
 import 'moment/locale/fr';
 
 import style from '../../Style';
-import { LinearGradient } from 'expo';
+import { LinearGradient } from 'expo-linear-gradient';
 
 moment.locale('fr');
 
