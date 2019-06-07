@@ -14,7 +14,7 @@
     "icon": "./assets/talkien_android.png",
     "splash": {
       "image": "./assets/splash.png",
-      "backgroundColor": "#ff602c"
+      "backgroundColor": "#312429"
     },
     "androidStatusBar": {
       "barStyle": "light-content"
