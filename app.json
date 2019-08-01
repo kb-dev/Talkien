@@ -9,19 +9,20 @@
       "ios",
       "android"
     ],
-    "version": "1.2.0",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/talkien_android.png",
     "splash": {
       "image": "./assets/splash.png",
-      "backgroundColor": "#312429"
+      "backgroundColor": "#312429",
+      "resizeMode": "contain"
     },
     "androidStatusBar": {
       "barStyle": "light-content"
     },
     "android": {
       "package": "com.kbdev.talkien",
-      "versionCode": 11,
+      "versionCode": 12,
       "permissions": [
         "READ_CALENDAR",
         "WRITE_CALENDAR"

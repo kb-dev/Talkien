@@ -321,10 +321,6 @@ const NavBar = StyleSheet.create({
         padding: 4,
     },
     bar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-
         shadowOffset: {
             width: 0,
             height: 1,
@@ -332,6 +328,11 @@ const NavBar = StyleSheet.create({
         shadowOpacity: 1,
         shadowColor: 'rgba(0,0,0,0.3)',
         elevation: 5,
+    },
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
 

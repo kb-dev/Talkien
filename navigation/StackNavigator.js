@@ -208,7 +208,7 @@ export default class App extends React.Component {
                 />
                 <View
                     style={{
-                        ...style.NavBar.bar,
+                        ...style.NavBar.container,
                         ...specificStyle,
                     }}>
                     <TouchableOpacity
