@@ -1,13 +1,20 @@
 <p align="center"><img align="center" src="banner.png"/></p><br/>
 
-## Preview
+> One app to rule all talks.
 
-Use expo client on Android to launch the app : https://expo.io/@hackjack/Talkien
+Tired of installing one app for each conference you go ?
 
+No problem, we developed an open-source app for you. **Talkien** is bringing together all conferences into a single location. Run the app, and find your conference with its program.
 
-## Builds
+We're currently targeting only French conferences.
 
-You can install the application on [Android](https://bit.ly/AndroidTalkien) and [iOS](https://bit.ly/iOSTalkien).
+Application available on:
+ - [iOS](https://bit.ly/iOSTalkien)
+ - [Android](https://bit.ly/AndroidTalkien)
+
+## Data
+
+All app data is hand-gathered, and available in [this repository](https://github.com/kb-dev/talkien-events).
 
 ## Development
 
