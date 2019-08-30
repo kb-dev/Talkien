@@ -1,5 +1,4 @@
-# Talkien
-One app to rule all talks
+<p align="center"><img align="center" src="banner.png"/></p><br/>
 
 ## Preview
 
