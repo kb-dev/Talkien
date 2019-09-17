@@ -205,9 +205,7 @@ class Program extends React.Component {
 
         sections.sort((a, b) => a.timestamp - b.timestamp);
 
-        this.setState({ nextState, list: sections, length: list.length, refreshing: false, fetchFinished: true }, () => {
-            requestAnimationFrame(() => {});
-        });
+        this.setState({ nextState, list: sections, length: list.length, refreshing: false, fetchFinished: true });
     }
 
     async fetchList() {

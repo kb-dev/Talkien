@@ -157,9 +157,9 @@ export default class App extends React.Component {
         const { tweener } = this.state;
 
         if (this.state.mustChangeColors) {
-            Animated.timing(tweener, { toValue: 0 }).start();
+            Animated.timing(tweener, { toValue: 0, useNativeDriver: true }).start();
         } else {
-            Animated.timing(tweener, { toValue: 1 }).start();
+            Animated.timing(tweener, { toValue: 1, useNativeDriver: true }).start();
         }
     }
 
@@ -291,6 +291,7 @@ export default class App extends React.Component {
                         ref={(navigator) => (this.navigator = navigator)}
                         style={{ flex: 1 }}
                         onNavigationStateChange={(prevState, currentState) => {
+                            console.log(prevState, currentState);
                             const currentScreen = getActiveRouteName(currentState);
                             const prevScreen = getActiveRouteName(prevState);
 

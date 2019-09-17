@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, TouchableHighlight, View } from 'react-native';
+import { InteractionManager, ScrollView, Text, TouchableHighlight, View } from 'react-native';
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -31,86 +31,92 @@ class Talk extends React.Component {
         this._calendarId = this.props.navigation.state.params.calendarId;
         this._eventId = this.props.navigation.state.params.eventId;
         this._data = this.props.navigation.state.params.data;
+        this._addEventInternal = this._addEventInternal.bind(this);
+        this._deleteEventInternal = this._deleteEventInternal.bind(this);
         this.addEventToCalendar = this.addEventToCalendar.bind(this);
         this.deleteEventFromCalendar = this.deleteEventFromCalendar.bind(this);
     }
 
-    addEventToCalendar() {
-        requestAnimationFrame(async () => {
-            await this.setState({ disabled: true });
+    async _addEventInternal() {
+        this.props.dispatchAddEvent({ ...this._data, eventId: this._eventId });
 
-            const { status } = await Permissions.getAsync(Permissions.CALENDAR);
-            let calendarEventId = null;
+        const { status } = await Permissions.getAsync(Permissions.CALENDAR);
+        let calendarEventId = null;
 
-            if (status === 'granted') {
-                try {
-                    const event = {
-                        title: this._name,
-                        color: '#386b91',
-                        entityType: Calendar.EntityTypes.EVENT,
-                        startDate: moment(this._data.startDate).toDate(),
-                        endDate: moment(this._data.endDate).toDate(),
-                        timeZone: 'Europe/Paris',
-                        location: this._data.location,
-                        notes: this._data.description,
-                    };
+        if (status === 'granted') {
+            try {
+                const event = {
+                    title: this._name,
+                    color: '#386b91',
+                    entityType: Calendar.EntityTypes.EVENT,
+                    startDate: moment(this._data.startDate).toDate(),
+                    endDate: moment(this._data.endDate).toDate(),
+                    timeZone: 'Europe/Paris',
+                    location: this._data.location,
+                    notes: this._data.description,
+                };
 
-                    calendarEventId = await Calendar.createEventAsync(this._calendarId, event);
-                } catch (e) {
-                    Toast.show('Erreur d\'ajout au calendrier', {
-                        duration: Toast.durations.LONG,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                        delay: 0,
-                    });
-                }
+                calendarEventId = await Calendar.createEventAsync(this._calendarId, event);
+
+                this.setState({ calendarEventId });
+            } catch (e) {
+                Toast.show("Erreur d'ajout au calendrier", {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0,
+                });
             }
+        }
+    }
 
-            this.props.dispatchAddEvent({ ...this._data, eventId: this._eventId });
-            const colors = [style.Theme.colors.savedBackground, style.Gradient.default.colors[1]];
-            this.props.navigation.navigate('Talk', {
-                name: this._name,
-                data: { ...this._data, colors },
-                eventId: this.state.eventId,
-                calendarTitle: this.state.calendarTitle,
-                calendarId: this.state.calendarId,
-            });
-            await this.setState({ disabled: false, saved: true, calendarEventId });
+    async _deleteEventInternal() {
+        this.props.dispatchDeleteEvent({ ...this._data, eventId: this._eventId });
+
+        const { status } = await Permissions.getAsync(Permissions.CALENDAR);
+
+        if (status === 'granted') {
+            try {
+                await Calendar.deleteEventAsync(String(this.state.calendarEventId));
+            } catch (e) {
+                Toast.show("Erreur de suppression de l'évènement du calendrier", {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0,
+                });
+            }
+        }
+
+        this.setState({ calendarEventId: null });
+    }
+
+    addEventToCalendar() {
+        const colors = [style.Theme.colors.savedBackground, style.Gradient.default.colors[1]];
+        this.props.navigation.setParams({
+            data: { ...this._data, colors },
+        });
+
+        this.setState({ saved: true }, async () => {
+            setTimeout(() => {
+                InteractionManager.runAfterInteractions(this._addEventInternal);
+            }, 400);
         });
     }
 
     deleteEventFromCalendar() {
-        requestAnimationFrame(async () => {
-            await this.setState({ disabled: true });
+        this.props.navigation.setParams({
+            data: { ...this._data, colors: null },
+        });
 
-            const { status } = await Permissions.getAsync(Permissions.CALENDAR);
-
-            if (status === 'granted') {
-                try {
-                    await Calendar.deleteEventAsync(String(this.state.calendarEventId));
-                } catch (e) {
-                    Toast.show('Erreur de suppression de l\'évènement du calendrier', {
-                        duration: Toast.durations.LONG,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                        delay: 0,
-                    });
-                }
-            }
-
-            this.props.dispatchDeleteEvent({ ...this._data, eventId: this._eventId });
-            this.props.navigation.navigate('Talk', {
-                name: this._name,
-                data: { ...this._data, colors: null },
-                eventId: this.state.eventId,
-                calendarTitle: this.state.calendarTitle,
-                calendarId: this.state.calendarId,
-            });
-            await this.setState({ disabled: false, saved: false, calendarEventId: null });
+        this.setState({ saved: false }, async () => {
+            setTimeout(() => {
+                InteractionManager.runAfterInteractions(this._deleteEventInternal);
+            }, 400);
         });
     }
 
@@ -148,7 +154,7 @@ class Talk extends React.Component {
         if (calendarEventId === null) {
             const { location, startDate, endDate } = this._data;
             const foundEvent = this.props.savedEvents.find(
-                (event) => event.checksum === generateChecksum(this._eventId, startDate, endDate, location, this._name),
+                (event) => event.checksum === generateChecksum(this._eventId, startDate, endDate, location, this._name)
             );
             if (foundEvent) {
                 saved = true;
@@ -172,7 +178,7 @@ class Talk extends React.Component {
                 onPress={this.addEventToCalendar}
                 style={style.Talk.button}
                 disabled={this.state.disabled}>
-                <MaterialCommunityIcons name="calendar-plus" size={32} style={{ width: 32, height: 32, color }}/>
+                <MaterialCommunityIcons name="calendar-plus" size={32} style={{ width: 32, height: 32, color }} />
             </TouchableHighlight>
         );
 
@@ -183,7 +189,7 @@ class Talk extends React.Component {
                     onPress={this.deleteEventFromCalendar}
                     disabled={this.state.disabled}
                     style={style.Talk.button}>
-                    <MaterialCommunityIcons name="calendar-remove" size={32} style={{ width: 32, height: 32, color }}/>
+                    <MaterialCommunityIcons name="calendar-remove" size={32} style={{ width: 32, height: 32, color }} />
                 </TouchableHighlight>
             );
         }
@@ -191,7 +197,7 @@ class Talk extends React.Component {
         return (
             <View style={style.Talk.container}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
-                    <BackButton backAction={this.props.navigation.goBack} title={'Programme'}/>
+                    <BackButton backAction={this.props.navigation.goBack} title={'Programme'} />
                 </View>
                 <View style={style.Talk.view}>
                     <View style={style.Talk.header}>
@@ -204,7 +210,7 @@ class Talk extends React.Component {
                                     alignSelf: 'stretch',
                                     marginRight: 16,
                                 }}>
-                                <Entypo name="blackboard" size={24} style={{ width: 24, height: 24, color }}/>
+                                <Entypo name="blackboard" size={24} style={{ width: 24, height: 24, color }} />
                             </View>
                             <View style={{ flex: 1 }}>
                                 <Text style={style.Talk.title}>{this._name}</Text>
@@ -212,7 +218,7 @@ class Talk extends React.Component {
                         </View>
                         <View style={style.Talk.details}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-                                <Entypo name="clock" size={20} style={{ width: 20, height: 24, marginRight: 16, color }}/>
+                                <Entypo name="clock" size={20} style={{ width: 20, height: 24, marginRight: 16, color }} />
                                 <Text style={style.Talk.hours}>
                                     {moment(startDate).format('HH:mm')} - {moment(endDate).format('HH:mm')}
                                 </Text>
@@ -226,13 +232,13 @@ class Talk extends React.Component {
                                 }}>
                                 {location && (
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <Entypo name="location" size={20} style={{ width: 20, height: 20, marginRight: 16, color }}/>
+                                        <Entypo name="location" size={20} style={{ width: 20, height: 20, marginRight: 16, color }} />
                                         <Text style={{ fontSize: 18, fontWeight: '200', color }}>{location}</Text>
                                     </View>
                                 )}
                                 {category && (
                                     <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
-                                        <Entypo name="tag" size={20} style={{ width: 20, height: 20, marginRight: 16, color }}/>
+                                        <Entypo name="tag" size={20} style={{ width: 20, height: 20, marginRight: 16, color }} />
                                         <Text style={{ fontSize: 18, fontWeight: '200', color }}>{category}</Text>
                                     </View>
                                 )}
@@ -249,14 +255,14 @@ class Talk extends React.Component {
                         <View style={style.Talk.description}>
                             {speakers && <Text style={{ color, fontSize: 16 }}>Présenté par : </Text>}
                             {speakers &&
-                            speakers.map((speaker) => (
-                                <Text key={speaker.name} style={{ color, fontSize: 16 }}>
-                                    - {speaker.name} {speaker.company ? `(${speaker.company})` : ''}
-                                </Text>
-                            ))}
+                                speakers.map((speaker) => (
+                                    <Text key={speaker.name} style={{ color, fontSize: 16 }}>
+                                        - {speaker.name} {speaker.company ? `(${speaker.company})` : ''}
+                                    </Text>
+                                ))}
                         </View>
 
-                        <View style={{ height: 60 }}/>
+                        <View style={{ height: 60 }} />
                     </ScrollView>
                 </View>
             </View>
@@ -279,5 +285,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps,
+    mapDispatchToProps
 )(Talk);
