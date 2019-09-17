@@ -86,7 +86,7 @@ class Program extends React.Component {
                     const calendarEvents = await Calendar.getEventsAsync(
                         [calendarId],
                         moment(this.state.startDate).toDate(),
-                        moment(this.state.endDate).toDate(),
+                        moment(this.state.endDate).toDate()
                     );
                     savedEvents = calendarEvents.map((event) => {
                         return {
@@ -132,7 +132,7 @@ class Program extends React.Component {
 
                     if (Platform.OS === 'ios') {
                         const local = calendars.filter(
-                            (fetchedCalendar) => fetchedCalendar.source && fetchedCalendar.source.type === Calendar.CalendarType.LOCAL,
+                            (fetchedCalendar) => fetchedCalendar.source && fetchedCalendar.source.type === Calendar.CalendarType.LOCAL
                         );
                         if (local.length < 1) {
                             throw new Error('No local calendar found');
@@ -170,26 +170,70 @@ class Program extends React.Component {
         }
     }
 
+    generateItemsForList(list) {
+        const sectionsIndex = {};
+        const sections = [];
+        const nextState = {};
+        let sectionIndex = 0;
+
+        list.map((talk, index) => {
+            const sectionId = `${talk.startDate}-${talk.endDate}`;
+
+            talk.index = index;
+            talk.checksum = generateChecksum(this.state.eventId, talk.startDate, talk.endDate, talk.location, talk.name);
+
+            if (sectionsIndex[sectionId]) {
+                sections[sectionsIndex[sectionId]].data.push(talk);
+            } else {
+                sectionsIndex[sectionId] = sectionIndex;
+                const title = `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`;
+
+                if (this.state.firstSection === null) {
+                    nextState.firstSection = title;
+                    nextState.firstTitle = title;
+                }
+
+                sections[sectionIndex] = {
+                    title,
+                    data: [talk],
+                    timestamp: moment(talk.startDate).valueOf(),
+                };
+
+                sectionIndex++;
+            }
+        });
+
+        sections.sort((a, b) => a.timestamp - b.timestamp);
+
+        this.setState({ nextState, list: sections, length: list.length, refreshing: false, fetchFinished: true }, () => {
+            requestAnimationFrame(() => {});
+        });
+    }
+
     async fetchList() {
         let list = [];
+        const nextState = {};
 
         const isConnected = (await NetInfo.getConnectionInfo()) !== 'none';
+
         if (isConnected) {
             try {
                 const response = await axios.get(`https://kb-dev.github.io/talkien-events/${this.state.eventId}/events.json`, {
                     responseType: 'json',
                 });
-                await this.setState({ error: false });
+
+                nextState.error = false;
                 list = response.data;
             } catch (error) {
                 if (!(error.response && error.response.status === 404)) {
-                    await this.setState({ error: true });
+                    nextState.error = true;
                     displayError(error);
                     return;
                 }
             }
         } else {
-            await this.setState({ error: true });
+            nextState.error = true;
+
             Toast.show(`Pas de connexion`, {
                 duration: Toast.durations.SHORT,
                 position: Toast.positions.BOTTOM,
@@ -200,34 +244,11 @@ class Program extends React.Component {
             });
         }
 
-        const sectionsIndex = {};
-        const sections = [];
-        let sectionIndex = 0;
-        await list.map(async (talk, index) => {
-            const sectionId = `${talk.startDate}-${talk.endDate}`;
-            talk.index = index;
-            talk.checksum = generateChecksum(this.state.eventId, talk.startDate, talk.endDate, talk.location, talk.name);
-
-            if (sectionsIndex[sectionId]) {
-                sections[sectionsIndex[sectionId]].data.push(talk);
-            } else {
-                sectionsIndex[sectionId] = sectionIndex;
-                const title = `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`;
-                if (this.state.firstSection === null) {
-                    await this.setState({ firstSection: title, sectionTitle: title });
-                }
-                sections[sectionIndex] = {
-                    title,
-                    data: [talk],
-                    timestamp: moment(talk.startDate).valueOf(),
-                };
-                sectionIndex++;
+        this.setState(nextState, () => {
+            if (!this.state.error) {
+                this.generateItemsForList(list);
             }
         });
-
-        sections.sort((a, b) => a.timestamp - b.timestamp);
-
-        await this.setState({ list: sections, length: list.length, refreshing: false, fetchFinished: true });
     }
 
     async refreshList() {
@@ -284,7 +305,7 @@ class Program extends React.Component {
         );
     };
 
-    renderSeparator = () => <View style={{ height: 14 }}/>;
+    renderSeparator = () => <View style={{ height: 14 }} />;
 
     keyExtract = (item) => item.index;
 
@@ -301,18 +322,18 @@ class Program extends React.Component {
                         flex: 1,
                         flexDirection: 'column',
                     }}>
-                    <Text style={{ color: '#FFF', textAlign: 'center' }}>{'Le programme n\'est pas encore disponible.'}</Text>
+                    <Text style={{ color: '#FFF', textAlign: 'center' }}>{"Le programme n'est pas encore disponible."}</Text>
                     <Text style={{ color: '#FFF', textAlign: 'center' }}>
                         {'Si le programme est disponible, vous pouvez ajouter les conférences sur le repo Github de Talkien :'}
                     </Text>
                     <View style={{ flex: 1, margin: 2 }}>
-                        <URLButton url="https://github.com/kb-dev/talkien-events" title="GitHub" navigation={this.props.navigation}/>
+                        <URLButton url="https://github.com/kb-dev/talkien-events" title="GitHub" navigation={this.props.navigation} />
                     </View>
                 </View>
             );
         } else if (!this.state.checkFinished || !this.state.fetchFinished) {
             content = (
-                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color}/>
+                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color} />
             );
         } else if (!this.state.error) {
             content = (
@@ -321,7 +342,7 @@ class Program extends React.Component {
                     renderSectionHeader={this.renderSection}
                     sections={this.state.list}
                     keyExtractor={this.keyExtract}
-                    initialNumToRender={20}
+                    initialNumToRender={15}
                     onEndReachedThreshold={0.1}
                     onRefresh={this.refreshList}
                     refreshing={this.state.refreshing}
@@ -337,17 +358,17 @@ class Program extends React.Component {
         return (
             <View style={[style.Program.containerView]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
-                    <BackButton backAction={this.props.navigation.goBack} title={this.state.eventName}/>
+                    <BackButton backAction={this.props.navigation.goBack} title={this.state.eventName} />
                 </View>
                 <View style={[style.Program.view]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }}>
-                        <View style={{ height: 2, flexShrink: 1, backgroundColor: '#FFF', width: '100%' }}/>
+                        <View style={{ height: 2, flexShrink: 1, backgroundColor: '#FFF', width: '100%' }} />
                         <View style={{ flexGrow: 1, marginHorizontal: 8 }}>
                             <Text style={{ color: style.Theme.colors.font, fontSize: 24, ...style.Theme.font.light }}>
                                 {capitalize(moment(this.state.startDate).format('dddd D MMMM'))}
                             </Text>
                         </View>
-                        <View style={{ flexShrink: 1, height: 2, backgroundColor: '#FFF', width: '100%' }}/>
+                        <View style={{ flexShrink: 1, height: 2, backgroundColor: '#FFF', width: '100%' }} />
                     </View>
                     <View style={{ alignSelf: 'stretch', paddingTop: 10, paddingBottom: 2 }}>
                         <Text style={{ color: style.Theme.colors.font, fontSize: 20, textAlign: 'center' }}>{this.state.sectionTitle}</Text>
@@ -373,5 +394,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps,
+    mapDispatchToProps
 )(Program);
