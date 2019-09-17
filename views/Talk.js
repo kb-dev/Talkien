@@ -69,6 +69,14 @@ class Talk extends React.Component {
             }
 
             this.props.dispatchAddEvent({ ...this._data, eventId: this._eventId });
+            const colors = [style.Theme.colors.savedBackground, style.Gradient.default.colors[1]];
+            this.props.navigation.navigate('Talk', {
+                name: this._name,
+                data: { ...this._data, colors },
+                eventId: this.state.eventId,
+                calendarTitle: this.state.calendarTitle,
+                calendarId: this.state.calendarId,
+            });
             await this.setState({ disabled: false, saved: true, calendarEventId });
         });
     }
@@ -95,6 +103,13 @@ class Talk extends React.Component {
             }
 
             this.props.dispatchDeleteEvent({ ...this._data, eventId: this._eventId });
+            this.props.navigation.navigate('Talk', {
+                name: this._name,
+                data: { ...this._data, colors: null },
+                eventId: this.state.eventId,
+                calendarTitle: this.state.calendarTitle,
+                calendarId: this.state.calendarId,
+            });
             await this.setState({ disabled: false, saved: false, calendarEventId: null });
         });
     }

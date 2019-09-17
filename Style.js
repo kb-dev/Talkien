@@ -7,6 +7,7 @@ const Palette = {
     darkBlue: '#304FFE',
     orange: '#FF852E',
     pink: '#E049A6',
+    yellow: '#F49E4C',
 };
 
 const Theme = {
@@ -22,6 +23,7 @@ const Theme = {
         listBackground: '#ffb996',
         iconColor: '#ff3c3c',
         link: Palette.blue,
+        savedBackground: Palette.yellow,
     },
     gradient: {
         start: '#FF852E',

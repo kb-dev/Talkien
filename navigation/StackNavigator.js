@@ -294,7 +294,7 @@ export default class App extends React.Component {
                             const currentScreen = getActiveRouteName(currentState);
                             const prevScreen = getActiveRouteName(prevState);
 
-                            if (prevScreen !== currentScreen) {
+                            if (prevScreen !== currentScreen || prevScreen === 'Talk') {
                                 if (currentScreen === 'Home' || currentScreen === 'About') {
                                     return this.setState({
                                         screen: currentScreen,
@@ -309,7 +309,7 @@ export default class App extends React.Component {
                                     });
                                 }
 
-                                this.setState({
+                                return this.setState({
                                     screen: currentScreen,
                                     colors: this.state.mustChangeColors ? getActiveColors(currentState) : this.state.colors,
                                     colorsLocation: this.state.mustChangeColors ? [0, 1] : this.state.colorsLocation,

@@ -235,11 +235,15 @@ class Program extends React.Component {
         await this.fetchList();
     }
 
-    openTalk(name, data) {
+    openTalk(name, data, isSaved = false) {
         const { navigate } = this.props.navigation;
+        let colors = null;
+        if (isSaved) {
+            colors = [style.Theme.colors.savedBackground, style.Gradient.default.colors[1]];
+        }
         navigate('Talk', {
             name,
-            data,
+            data: { ...data, colors },
             eventId: this.state.eventId,
             calendarTitle: this.state.calendarTitle,
             calendarId: this.state.calendarId,
@@ -264,7 +268,7 @@ class Program extends React.Component {
             lang={item.lang}
             data={item}
             openTalk={this.openTalk}
-            isSaved={this.state.savedEvents.indexOf(item.checksum) !== -1}
+            isSaved={this.state.savedEvents.includes(item.checksum)}
             isLast={item.index === this.state.length - 1}
         />
     );

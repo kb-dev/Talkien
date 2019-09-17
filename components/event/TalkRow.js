@@ -27,7 +27,7 @@ export default class TalkRow extends React.PureComponent {
 
     _onPress() {
         requestAnimationFrame(() => {
-            this.props.openTalk(this.props.data.name, this.props.data);
+            this.props.openTalk(this.props.data.name, this.props.data, this.props.isSaved);
         });
     }
 
