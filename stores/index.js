@@ -6,7 +6,7 @@ import rootReducer from './../reducers';
 
 const config = {
     timeout: 20000,
-    key: 'root-v4',
+    key: 'root-v5',
     storage: AsyncStorage,
 };
 const reducer = persistCombineReducers(config, rootReducer);

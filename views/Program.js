@@ -132,10 +132,13 @@ class Program extends React.Component {
 
                     if (Platform.OS === 'ios') {
                         const local = calendars.filter(
-                            (fetchedCalendar) => fetchedCalendar.source && fetchedCalendar.source.type === Calendar.CalendarType.LOCAL
+                            (fetchedCalendar) =>
+                                fetchedCalendar.source &&
+                                (fetchedCalendar.source.type === Calendar.CalendarType.LOCAL ||
+                                    (fetchedCalendar.source.type === Calendar.CalendarType.CALDAV && fetchedCalendar.source.name === 'iCloud')),
                         );
                         if (local.length < 1) {
-                            throw new Error('No local calendar found');
+                            throw new Error('Impossible to find a source calendar');
                         }
 
                         calendar = {
@@ -162,18 +165,15 @@ class Program extends React.Component {
                     // });
                 }
             }
-
-            const formattedEvents = savedEvents.map(({ checksum }) => checksum);
-
-            this.props.dispatchAddEvents(formattedEvents);
-            await this.setState({ calendarId, savedEvents: formattedEvents, checkFinished: true });
+            this.props.dispatchAddEvents(savedEvents);
+            await this.setState({ calendarId, savedEvents: savedEvents.map((event) => event.checksum), checkFinished: true });
         }
     }
 
     generateItemsForList(list) {
         const sectionsIndex = {};
         const sections = [];
-        const nextState = {};
+        const nextState = { firstSection: null, firstTitle: null };
         let sectionIndex = 0;
 
         list.map((talk, index) => {
@@ -188,7 +188,7 @@ class Program extends React.Component {
                 sectionsIndex[sectionId] = sectionIndex;
                 const title = `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`;
 
-                if (this.state.firstSection === null) {
+                if (nextState.firstSection === null) {
                     nextState.firstSection = title;
                     nextState.firstTitle = title;
                 }
@@ -204,8 +204,7 @@ class Program extends React.Component {
         });
 
         sections.sort((a, b) => a.timestamp - b.timestamp);
-
-        this.setState({ nextState, list: sections, length: list.length, refreshing: false, fetchFinished: true });
+        this.setState({ ...nextState, list: sections, length: list.length, refreshing: false, fetchFinished: true });
     }
 
     async fetchList() {

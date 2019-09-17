@@ -291,7 +291,6 @@ export default class App extends React.Component {
                         ref={(navigator) => (this.navigator = navigator)}
                         style={{ flex: 1 }}
                         onNavigationStateChange={(prevState, currentState) => {
-                            console.log(prevState, currentState);
                             const currentScreen = getActiveRouteName(currentState);
                             const prevScreen = getActiveRouteName(prevState);
 
