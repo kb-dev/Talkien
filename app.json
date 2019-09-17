@@ -9,7 +9,7 @@
       "ios",
       "android"
     ],
-    "version": "1.2.1",
+    "version": "1.2.2",
     "orientation": "portrait",
     "icon": "./assets/talkien_android.png",
     "splash": {
@@ -22,7 +22,7 @@
     },
     "android": {
       "package": "com.kbdev.talkien",
-      "versionCode": 12,
+      "versionCode": 13,
       "permissions": [
         "READ_CALENDAR",
         "WRITE_CALENDAR"
@@ -44,6 +44,9 @@
       "bundleIdentifier": "com.kbdev.talkien",
       "config": {
         "googleMapsApiKey": "AIzaSyCnklG87Mxg73Q5kA9SNO6yjwy9VMeGREM"
+      },
+      "infoPlist": {
+        "NSCalendarsUsageDescription": "Talkien a besoin de l'accès à votre calendrier si vous souhaitez synchroniser les événements que vous sauvegardez"
       }
     },
     "locales": {

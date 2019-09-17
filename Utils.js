@@ -1,4 +1,5 @@
 import moment from 'moment';
+import Toast from 'react-native-root-toast';
 
 function upperCaseFirstLetter(string) {
     const firstLetter = string[0].toUpperCase();
@@ -50,7 +51,7 @@ function generateChecksum(eventId, startDate, endDate, location, name) {
     return `${eventId}|${startDate}-${endDate}@${location}#${name}`;
 }
 
-function compareDate(a, b) {
+function compareDate(a, b, sort = +1) {
     let momentA = a;
     let momentB = b;
 
@@ -62,11 +63,41 @@ function compareDate(a, b) {
     }
 
     if (momentA.isBefore(momentB)) {
-        return -1;
+        return -1 * sort;
     } else if (momentA.isAfter(momentB)) {
-        return 1;
+        return sort;
     }
     return 0;
 }
 
-export { compareDate, upperCaseFirstLetter, isArraysEquals, capitalize, capitalizeFirstLetter, cleanMarkdown, generateChecksum };
+function displayError(error) {
+    if (error.response) {
+        Toast.show(`Le serveur a répondu par une erreur ${error.response.status}`, {
+            duration: Toast.durations.LONG,
+            position: Toast.positions.BOTTOM,
+            shadow: true,
+            animation: true,
+            hideOnPress: true,
+            delay: 0,
+        });
+    } else if (error.request) {
+        Toast.show(`Pas de connexion`, {
+            duration: Toast.durations.SHORT,
+            position: Toast.positions.BOTTOM,
+            shadow: true,
+            animation: true,
+            hideOnPress: true,
+            delay: 0,
+        });
+    } else {
+        Toast.show(`Erreur : ${error.message}`, {
+            duration: Toast.durations.LONG,
+            position: Toast.positions.BOTTOM,
+            shadow: true,
+            animation: true,
+            hideOnPress: true,
+        });
+    }
+}
+
+export { compareDate, upperCaseFirstLetter, isArraysEquals, capitalize, capitalizeFirstLetter, cleanMarkdown, generateChecksum, displayError };

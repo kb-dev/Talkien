@@ -8,7 +8,7 @@ import 'moment/locale/fr';
 // UI
 import EventRow from '../components/home/EventRow';
 // Misc
-import { compareDate } from '../Utils';
+import { compareDate, displayError } from '../Utils';
 import style from '../Style';
 
 moment.locale('fr');
@@ -59,33 +59,7 @@ export default class Home extends React.Component {
                 list = response.data;
                 AsyncStorage.setItem('list', JSON.stringify({ list, date: moment() }));
             } catch (error) {
-                if (error.response) {
-                    Toast.show(`Le serveur a répondu par une erreur ${error.response.status}`, {
-                        duration: Toast.durations.LONG,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                        delay: 0,
-                    });
-                } else if (error.request) {
-                    Toast.show(`Pas de connexion`, {
-                        duration: Toast.durations.SHORT,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                        delay: 0,
-                    });
-                } else {
-                    Toast.show(`Erreur : ${error.message}`, {
-                        duration: Toast.durations.LONG,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                    });
-                }
+                displayError(error);
                 list = await this.getCache();
             }
         } else {
@@ -118,9 +92,11 @@ export default class Home extends React.Component {
             this.setState({ list: this.state.originalList, searching: false });
         } else {
             const regex = new RegExp(input, 'gi');
-            const list = this.state.rawList.filter((event) => {
-                return event.name.match(regex);
-            });
+            const list = this.state.rawList
+                .filter((event) => {
+                    return event.name.match(regex);
+                })
+                .sort((eventA, eventB) => compareDate(eventA.startDate, eventB.startDate, -1));
             this.setState({ list, searching: true });
         }
     }

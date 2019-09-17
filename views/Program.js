@@ -11,7 +11,7 @@ import 'moment/locale/fr';
 
 import TalkRow from '../components/event/TalkRow';
 import style from '../Style';
-import { capitalize, generateChecksum } from '../Utils';
+import { capitalize, displayError, generateChecksum } from '../Utils';
 import BackButton from '../components/buttons/BackButton';
 import { addEvents } from '../actions';
 import URLButton from '../components/buttons/URLButton';
@@ -41,6 +41,8 @@ class Program extends React.Component {
             nextSection: null,
             length: null,
             savedEvents: [],
+            checkFinished: false,
+            fetchFinished: false,
         };
 
         this.openTalk = this.openTalk.bind(this);
@@ -51,8 +53,8 @@ class Program extends React.Component {
     }
 
     async componentDidMount() {
-        await this.fetchList();
-        await this.checkCalendar();
+        this.checkCalendar();
+        this.fetchList();
     }
 
     componentDidUpdate(prevProps) {
@@ -63,11 +65,12 @@ class Program extends React.Component {
     }
 
     async checkCalendar() {
-        let savedEvents = [];
-
+        let savedEvents = this.props.savedEvents.map((event) => event.checksum);
         const { status } = await Permissions.getAsync(Permissions.CALENDAR);
 
-        if (status === 'granted') {
+        if (status !== 'granted') {
+            await this.setState({ savedEvents, checkFinished: true });
+        } else {
             const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
             const { calendarTitle, eventId } = this.state;
             let calendarId = null;
@@ -149,24 +152,26 @@ class Program extends React.Component {
                     calendarId = await Calendar.createCalendarAsync(calendar);
                 } catch (e) {
                     console.warn(e);
-                    Toast.show(`Erreur de création du calendrier`, {
-                        duration: Toast.durations.LONG,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                        delay: 0,
-                    });
+                    // Toast.show(`Erreur de création du calendrier`, {
+                    //     duration: Toast.durations.LONG,
+                    //     position: Toast.positions.BOTTOM,
+                    //     shadow: true,
+                    //     animation: true,
+                    //     hideOnPress: true,
+                    //     delay: 0,
+                    // });
                 }
             }
 
-            this.props.dispatchAddEvents(savedEvents);
-            await this.setState({ calendarId });
+            const formattedEvents = savedEvents.map(({ checksum }) => checksum);
+
+            this.props.dispatchAddEvents(formattedEvents);
+            await this.setState({ calendarId, savedEvents: formattedEvents, checkFinished: true });
         }
     }
 
     async fetchList() {
-        let list = null;
+        let list = [];
 
         const isConnected = (await NetInfo.getConnectionInfo()) !== 'none';
         if (isConnected) {
@@ -177,37 +182,10 @@ class Program extends React.Component {
                 await this.setState({ error: false });
                 list = response.data;
             } catch (error) {
-                if (error.response && error.response.status === 404) {
-                    list = [];
-                } else {
+                if (!(error.response && error.response.status === 404)) {
                     await this.setState({ error: true });
-                    if (error.response) {
-                        Toast.show(`Le serveur a répondu par une erreur ${error.response.status}`, {
-                            duration: Toast.durations.LONG,
-                            position: Toast.positions.BOTTOM,
-                            shadow: true,
-                            animation: true,
-                            hideOnPress: true,
-                            delay: 0,
-                        });
-                    } else if (error.request) {
-                        Toast.show(`Pas de connexion`, {
-                            duration: Toast.durations.SHORT,
-                            position: Toast.positions.BOTTOM,
-                            shadow: true,
-                            animation: true,
-                            hideOnPress: true,
-                            delay: 0,
-                        });
-                    } else {
-                        Toast.show(`Erreur : ${error.message}`, {
-                            duration: Toast.durations.LONG,
-                            position: Toast.positions.BOTTOM,
-                            shadow: true,
-                            animation: true,
-                            hideOnPress: true,
-                        });
-                    }
+                    displayError(error);
+                    return;
                 }
             }
         } else {
@@ -222,36 +200,34 @@ class Program extends React.Component {
             });
         }
 
-        if (list !== null) {
-            const sectionsIndex = {};
-            const sections = [];
-            let sectionIndex = 0;
-            await list.forEach(async (talk, index) => {
-                const sectionId = `${talk.startDate}-${talk.endDate}`;
-                talk.index = index;
-                talk.checksum = generateChecksum(this.state.eventId, talk.startDate, talk.endDate, talk.location, talk.name);
+        const sectionsIndex = {};
+        const sections = [];
+        let sectionIndex = 0;
+        await list.map(async (talk, index) => {
+            const sectionId = `${talk.startDate}-${talk.endDate}`;
+            talk.index = index;
+            talk.checksum = generateChecksum(this.state.eventId, talk.startDate, talk.endDate, talk.location, talk.name);
 
-                if (sectionsIndex[sectionId]) {
-                    sections[sectionsIndex[sectionId]].data.push(talk);
-                } else {
-                    sectionsIndex[sectionId] = sectionIndex;
-                    const title = `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`;
-                    if (this.state.firstSection === null) {
-                        await this.setState({ firstSection: title, sectionTitle: title });
-                    }
-                    sections[sectionIndex] = {
-                        title,
-                        data: [talk],
-                        timestamp: moment(talk.startDate).valueOf(),
-                    };
-                    sectionIndex++;
+            if (sectionsIndex[sectionId]) {
+                sections[sectionsIndex[sectionId]].data.push(talk);
+            } else {
+                sectionsIndex[sectionId] = sectionIndex;
+                const title = `${moment(talk.startDate).format('HH:mm')} - ${moment(talk.endDate).format('HH:mm')}`;
+                if (this.state.firstSection === null) {
+                    await this.setState({ firstSection: title, sectionTitle: title });
                 }
-            });
+                sections[sectionIndex] = {
+                    title,
+                    data: [talk],
+                    timestamp: moment(talk.startDate).valueOf(),
+                };
+                sectionIndex++;
+            }
+        });
 
-            sections.sort((a, b) => a.timestamp - b.timestamp);
+        sections.sort((a, b) => a.timestamp - b.timestamp);
 
-            await this.setState({ list: sections, length: list.length, refreshing: false });
-        }
+        await this.setState({ list: sections, length: list.length, refreshing: false, fetchFinished: true });
     }
 
     async refreshList() {
@@ -311,7 +287,7 @@ class Program extends React.Component {
     render() {
         let content = null;
 
-        if (this.state.list && this.state.list.length === 0) {
+        if (this.state.fetchFinished && this.state.list.length === 0) {
             content = (
                 <View
                     style={{
@@ -330,18 +306,11 @@ class Program extends React.Component {
                     </View>
                 </View>
             );
-        } else if (this.state.list === null || this.state.sectionTitle === null) {
-            if (!this.state.error) {
-                content = (
-                    <ActivityIndicator
-                        style={style.ActivityIndicator.style}
-                        size="large"
-                        animating={true}
-                        color={style.ActivityIndicator.color}
-                    />
-                );
-            }
-        } else {
+        } else if (!this.state.checkFinished || !this.state.fetchFinished) {
+            content = (
+                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color}/>
+            );
+        } else if (!this.state.error) {
             content = (
                 <SectionList
                     renderItem={this.renderItem}

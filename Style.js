@@ -92,6 +92,7 @@ const Home = StyleSheet.create({
     view: {
         flex: 1,
         paddingHorizontal: 20,
+        marginBottom: 70,
     },
     titleView: {
         marginTop: 60,
@@ -228,11 +229,11 @@ const Talk = StyleSheet.create({
         borderRadius: 40,
         elevation: 2,
         shadowOffset: {
-            width: 2,
-            height: 2,
+            width: 0,
+            height: 0,
         },
         shadowOpacity: 1,
-        shadowColor: 'rgba(0,0,0,0.6)',
+        shadowColor: 'rgba(0,0,0,0.3)',
     },
     hours: {
         fontSize: 18,
