@@ -4,25 +4,22 @@
     "description": "One app to rule all talks.",
     "slug": "Talkien",
     "privacy": "public",
-    "sdkVersion": "33.0.0",
+    "sdkVersion": "35.0.0",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "1.2.2",
+    "version": "1.2.4",
     "orientation": "portrait",
-    "icon": "./assets/talkien_android.png",
+    "icon": "./assets/ios.png",
     "splash": {
       "image": "./assets/splash.png",
       "backgroundColor": "#312429",
       "resizeMode": "contain"
     },
-    "androidStatusBar": {
-      "barStyle": "light-content"
-    },
     "android": {
       "package": "com.kbdev.talkien",
-      "versionCode": 13,
+      "versionCode": 15,
       "permissions": [
         "READ_CALENDAR",
         "WRITE_CALENDAR"
@@ -39,7 +36,7 @@
       "playStoreUrl": "https://play.google.com/store/apps/details?id=com.kbdev.talkien"
     },
     "ios": {
-      "icon": "./assets/talkien_ios.png",
+      "icon": "./assets/ios.png",
       "supportsTablet": true,
       "bundleIdentifier": "com.kbdev.talkien",
       "config": {

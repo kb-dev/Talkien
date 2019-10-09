@@ -16,7 +16,7 @@ const { store, pStore } = configureStore();
 const RNRedux = () => (
     <Provider store={store}>
         <PersistGate loading={null} persistor={pStore}>
-            <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent"/>
+            <StatusBar barStyle={'light-content'} translucent={true} backgroundColor={'transparent'}/>
             <StackNavigator/>
         </PersistGate>
     </Provider>
