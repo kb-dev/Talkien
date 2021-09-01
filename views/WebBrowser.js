@@ -1,7 +1,9 @@
 import React from 'react';
-import { ActivityIndicator, Linking, Platform, TouchableOpacity, View, WebView } from 'react-native';
+import { ActivityIndicator, Linking, Platform, TouchableOpacity, View } from 'react-native';
+import { WebView } from 'react-native-webview';
+import PropTypes from 'prop-types';
 import NavigationBar from 'react-native-navbar';
-import { withNavigation } from 'react-navigation';
+import { withNavigation } from '@react-navigation/compat';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -21,12 +23,16 @@ function treatTitle(str) {
 }
 
 class WebBrowser extends React.Component {
+    static propTypes = {
+        route: PropTypes.object,
+    };
+
     constructor(props) {
         super(props);
 
         let uri = 'https://kbdev.io';
-        if (this.props.navigation.state.params) {
-            const { href } = this.props.navigation.state.params;
+        if (this.props.route.params) {
+            const { href } = this.props.route.params;
             if (href) {
                 uri = href;
             }
@@ -75,7 +81,7 @@ class WebBrowser extends React.Component {
     renderLoading() {
         return (
             <View style={{ flex: 1, justifyContent: 'center', backgroundColor: style.Theme.colors.greyBackground }}>
-                <ActivityIndicator size="large" color={style.Theme.colors.iconColor}/>
+                <ActivityIndicator size="large" color={style.Theme.colors.iconColor} />
             </View>
         );
     }
@@ -84,7 +90,7 @@ class WebBrowser extends React.Component {
         if (this.state.uri === null) {
             return this.renderLoading();
         }
-        const leftButton = <BackButton backAction={this.props.navigation.goBack}/>;
+        const leftButton = <BackButton backAction={this.props.navigation.goBack} />;
 
         let javascript = null;
         if (Platform.OS !== 'ios') {

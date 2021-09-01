@@ -12,7 +12,7 @@ export default class About extends React.Component {
 
         return (
             <View style={style.About.view}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch', paddingTop: 25, paddingBottom: 10}}>
                     <BackButton backAction={this.props.navigation.goBack} title={'Recherche'}/>
                 </View>
                 <View style={style.About.container}>

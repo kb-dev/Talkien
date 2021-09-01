@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, AsyncStorage, FlatList, Text, TextInput, View } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import * as Permissions from 'expo-permissions';
 import axios from 'axios';
 import Toast from 'react-native-root-toast';
@@ -49,7 +50,7 @@ export default class Home extends React.Component {
     async fetchList() {
         let list = null;
 
-        const isConnected = (await NetInfo.getConnectionInfo()) !== 'none';
+        const isConnected = (await NetInfo.fetch()) !== 'none';
         if (isConnected) {
             try {
                 const response = await axios.get('https://kb-dev.github.io/talkien-events/events.json', {
@@ -116,7 +117,7 @@ export default class Home extends React.Component {
 
         if (list === null) {
             content = (
-                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color}/>
+                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color} />
             );
         } else {
             if (list.length === 0) {

@@ -22,7 +22,7 @@ const Theme = {
         greyBackground: 'transparent',
         listBackground: '#ffb996',
         iconColor: '#ff3c3c',
-        link: Palette.blue,
+        link: Palette.darkBlue,
         savedBackground: Palette.yellow,
     },
     gradient: {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, Linking, Text, TouchableHighlight, View } from 'react-native';
+import PropTypes from 'prop-types';
 import MapView from 'react-native-maps';
 import { Polygon, Svg } from 'react-native-svg';
 
@@ -49,6 +50,10 @@ const mapStyle = [
 ];
 
 export default class Event extends React.PureComponent {
+    static propTypes = {
+        route: PropTypes.object,
+    };
+
     constructor(props) {
         super(props);
 
@@ -57,7 +62,7 @@ export default class Event extends React.PureComponent {
     }
 
     onPressGoogleMaps() {
-        const { latitude, longitude } = this.props.navigation.state.params.data.location;
+        const { latitude, longitude } = this.props.route.data.location;
         const link = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
 
         Linking.canOpenURL(link)
@@ -73,7 +78,7 @@ export default class Event extends React.PureComponent {
 
     openProgram() {
         const { navigate } = this.props.navigation;
-        const { name, id, startDate, endDate } = this.props.navigation.state.params.data;
+        const { name, id, startDate, endDate } = this.props.route.params.data;
 
         navigate('Program', {
             name,
@@ -95,7 +100,7 @@ export default class Event extends React.PureComponent {
             location,
             endDate,
             startDate,
-        } = this.props.navigation.state.params.data;
+        } = this.props.route.params.data;
 
         const start = moment(startDate);
         const end = moment(endDate);
@@ -109,7 +114,7 @@ export default class Event extends React.PureComponent {
         return (
             <View style={style.Event.containerView}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
-                    <BackButton backAction={this.props.navigation.goBack} title={'Recherche'}/>
+                    <BackButton backAction={this.props.navigation.goBack} title={'Recherche'} />
                 </View>
                 <View style={style.Event.titleView}>
                     <Text style={style.Event.title}>{name}</Text>
@@ -129,8 +134,8 @@ export default class Event extends React.PureComponent {
                                 justifyContent: 'space-between',
                                 alignItems: 'center',
                             }}>
-                            {url && <URLButton url={url} title="Site web" navigation={this.props.navigation}/>}
-                            {bookingUrl && <URLButton url={bookingUrl} title="Réserver sa place" navigation={this.props.navigation}/>}
+                            {url ? <URLButton url={url} title="Site web" navigation={this.props.navigation} /> : null}
+                            {bookingUrl ? <URLButton url={bookingUrl} title="Réserver sa place" navigation={this.props.navigation} /> : null}
                         </View>
                     </View>
                     <View style={style.Event.locationView}>
@@ -172,10 +177,10 @@ export default class Event extends React.PureComponent {
                                                 padding: 10,
                                                 borderRadius: 30,
                                             }}>
-                                            <View style={{ height: 12, width: 12, backgroundColor: '#FFF', borderRadius: 20 }}/>
+                                            <View style={{ height: 12, width: 12, backgroundColor: '#FFF', borderRadius: 20 }} />
                                         </View>
                                         <Svg height={12} width={8} style={{ marginTop: -1 }}>
-                                            <Polygon points="0,0 4,12 8,0" fill={style.Theme.colors.primary}/>
+                                            <Polygon points="0,0 4,12 8,0" fill={style.Theme.colors.primary} />
                                         </Svg>
                                     </View>
                                 </MapView.Marker>
@@ -185,7 +190,7 @@ export default class Event extends React.PureComponent {
                                     underlayColor={style.Theme.overlayColor}
                                     onPress={this.onPressGoogleMaps}
                                     style={{ alignSelf: 'stretch', backgroundColor: 'rgba(255,255,255,0.5)', margin: 4, padding: 4 }}>
-                                    <Image style={{ width: 32, height: 32 }} source={require('../assets/gmaps.png')}/>
+                                    <Image style={{ width: 32, height: 32 }} source={require('../assets/gmaps.png')} />
                                 </TouchableHighlight>
                             </View>
                         </View>

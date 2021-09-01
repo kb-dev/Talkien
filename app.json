@@ -4,7 +4,6 @@
     "description": "One app to rule all talks.",
     "slug": "Talkien",
     "privacy": "public",
-    "sdkVersion": "35.0.0",
     "platforms": [
       "ios",
       "android"
