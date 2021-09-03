@@ -122,10 +122,6 @@ export default class App extends React.Component {
             return false;
         });
 
-        /*  if (this.state.screen === 'WebBrowser') { // comportement à reproduire avec react-navigation 5
-            navBar = null;
-        } */
-
         const colorsOpacity = this.state.tweener.interpolate({
             inputRange: [0, 0.5, 1],
             outputRange: [0, 1, 1],

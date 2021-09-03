@@ -1,7 +1,8 @@
 import React from 'react';
-import { ActivityIndicator, AsyncStorage, FlatList, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, TextInput, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
-import * as Permissions from 'expo-permissions';
+import * as Calendar from 'expo-calendar';
 import axios from 'axios';
 import Toast from 'react-native-root-toast';
 import moment from 'moment';
@@ -33,7 +34,7 @@ export default class Home extends React.Component {
     }
 
     async componentDidMount() {
-        await Permissions.askAsync(Permissions.CALENDAR);
+        await Calendar.getCalendarPermissionsAsync();
         await this.fetchList();
     }
 

@@ -68,7 +68,7 @@ class Program extends React.Component {
 
     async checkCalendar() {
         let savedEvents = this.props.savedEvents.map((event) => event.checksum);
-        const { status } = await Permissions.getAsync(Permissions.CALENDAR);
+        const { status } = await Calendar.getCalendarPermissionsAsync();
 
         if (status !== 'granted') {
             await this.setState({ savedEvents, checkFinished: true });

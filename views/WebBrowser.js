@@ -116,7 +116,13 @@ class WebBrowser extends React.Component {
                     injectedJavaScript={javascript}
                     onNavigationStateChange={(e) => {
                         if (!e.loading) {
-                            this.setState({ url: e.url, title: e.title, canGoBack: e.canGoBack, loading: e.loading });
+                            this.setState({
+                                url: e.url,
+                                title: e.title,
+                                canGoBack: e.canGoBack,
+                                canGoForward: e.canGoForward,
+                                loading: e.loading,
+                            });
                         }
                     }}
                     source={{ uri: this.state.uri }}
