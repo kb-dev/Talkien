@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -19,16 +19,17 @@ class Calendar extends React.Component {
         super(props);
     }
 
-    async componentDidMount() {
-    }
+    async componentDidMount() {}
 
     render() {
         return (
             <View style={[style.Program.containerView]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
-                    <BackButton backAction={this.props.navigation.goBack} title={'Recherche'}/>
+                    <BackButton backAction={this.props.navigation.goBack} title={'Recherche'} />
                 </View>
-                <View style={[style.Program.view]}>{JSON.stringify(this.props.savedEvents)}</View>
+                <View style={[style.Program.view]}>
+                    <Text>{JSON.stringify(this.props.savedEvents)}</Text>
+                </View>
             </View>
         );
     }

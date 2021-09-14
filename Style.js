@@ -22,7 +22,7 @@ const Theme = {
         greyBackground: 'transparent',
         listBackground: '#ffb996',
         iconColor: '#ff3c3c',
-        link: Palette.blue,
+        link: Palette.darkBlue,
         savedBackground: Palette.yellow,
     },
     gradient: {
@@ -175,7 +175,8 @@ const BackButton = StyleSheet.create({
         alignItems: 'center',
     },
     text: {
-        fontSize: 20,
+        paddingLeft: 12,
+        fontSize: 22,
         color: Theme.colors.font,
     },
 });
@@ -316,6 +317,7 @@ const ActivityIndicator = {
 
 const NavBar = StyleSheet.create({
     button: {
+        bottom: 20,
         paddingVertical: 8,
         paddingHorizontal: 12,
         marginHorizontal: 8,
@@ -323,19 +325,11 @@ const NavBar = StyleSheet.create({
     view: {
         padding: 4,
     },
-    bar: {
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 1,
-        shadowColor: 'rgba(0,0,0,0.3)',
-        elevation: 5,
-    },
     container: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        maxHeight: 23,
     },
 });
 

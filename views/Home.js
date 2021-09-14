@@ -1,6 +1,8 @@
 import React from 'react';
-import { ActivityIndicator, AsyncStorage, FlatList, NetInfo, Text, TextInput, View } from 'react-native';
-import * as Permissions from 'expo-permissions';
+import { ActivityIndicator, FlatList, Text, TextInput, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
+import * as Calendar from 'expo-calendar';
 import axios from 'axios';
 import Toast from 'react-native-root-toast';
 import moment from 'moment';
@@ -32,7 +34,7 @@ export default class Home extends React.Component {
     }
 
     async componentDidMount() {
-        await Permissions.askAsync(Permissions.CALENDAR);
+        await Calendar.getCalendarPermissionsAsync();
         await this.fetchList();
     }
 
@@ -49,7 +51,7 @@ export default class Home extends React.Component {
     async fetchList() {
         let list = null;
 
-        const isConnected = (await NetInfo.getConnectionInfo()) !== 'none';
+        const isConnected = (await NetInfo.fetch()) !== 'none';
         if (isConnected) {
             try {
                 const response = await axios.get('https://kb-dev.github.io/talkien-events/events.json', {
@@ -116,7 +118,7 @@ export default class Home extends React.Component {
 
         if (list === null) {
             content = (
-                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color}/>
+                <ActivityIndicator style={style.ActivityIndicator.style} size="large" animating={true} color={style.ActivityIndicator.color} />
             );
         } else {
             if (list.length === 0) {

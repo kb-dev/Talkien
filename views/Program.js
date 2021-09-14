@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, NetInfo, Platform, SectionList, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, SectionList, Text, View } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
 import moment from 'moment';
@@ -22,17 +23,18 @@ class Program extends React.Component {
     static propTypes = {
         savedEvents: PropTypes.array,
         dispatchAddEvents: PropTypes.func,
+        route: PropTypes.object
     };
 
     constructor(props) {
         super(props);
         this.state = {
-            eventName: this.props.navigation.state.params.name,
-            eventId: this.props.navigation.state.params.id,
-            startDate: this.props.navigation.state.params.startDate,
-            endDate: this.props.navigation.state.params.endDate,
+            eventName: this.props.route.params.name,
+            eventId: this.props.route.params.id,
+            startDate: this.props.route.params.startDate,
+            endDate: this.props.route.params.endDate,
             calendarId: null,
-            calendarTitle: `${this.props.navigation.state.params.name} | Talkien`,
+            calendarTitle: `${this.props.route.params.name} | Talkien`,
             list: null,
             refreshing: false,
             error: false,
@@ -44,7 +46,7 @@ class Program extends React.Component {
             checkFinished: false,
             fetchFinished: false,
         };
-
+        
         this.openTalk = this.openTalk.bind(this);
         this.updateSectionTitle = this.updateSectionTitle.bind(this);
         this.refreshList = this.refreshList.bind(this);
@@ -66,7 +68,7 @@ class Program extends React.Component {
 
     async checkCalendar() {
         let savedEvents = this.props.savedEvents.map((event) => event.checksum);
-        const { status } = await Permissions.getAsync(Permissions.CALENDAR);
+        const { status } = await Calendar.getCalendarPermissionsAsync();
 
         if (status !== 'granted') {
             await this.setState({ savedEvents, checkFinished: true });
@@ -211,7 +213,7 @@ class Program extends React.Component {
         let list = [];
         const nextState = {};
 
-        const isConnected = (await NetInfo.getConnectionInfo()) !== 'none';
+        const isConnected = (await NetInfo.fetch()) !== 'none';
 
         if (isConnected) {
             try {

@@ -85,7 +85,7 @@ const TalkRow = (props) => {
                     {lang && (
                         <View style={{ flexDirection: 'row', marginTop: 6, alignItems: 'center' }}>
                             <MaterialCommunityIcons
-                                name="voice"
+                                name="bullhorn-outline"
                                 size={14}
                                 style={{ width: 14, height: 14, marginRight: 4, color: style.Theme.colors.font }}
                             />

@@ -21,16 +21,17 @@ class Talk extends React.Component {
         dispatchAddEvent: PropTypes.func,
         dispatchDeleteEvent: PropTypes.func,
         savedEvents: PropTypes.array,
+        route: PropTypes.object,
     };
 
     constructor(props) {
         super(props);
         this.state = { calendarEventId: null, disabled: false, saved: false };
 
-        this._name = this.props.navigation.state.params.name;
-        this._calendarId = this.props.navigation.state.params.calendarId;
-        this._eventId = this.props.navigation.state.params.eventId;
-        this._data = this.props.navigation.state.params.data;
+        this._name = this.props.route.params.name;
+        this._calendarId = this.props.route.params.calendarId;
+        this._eventId = this.props.route.params.eventId;
+        this._data = this.props.route.params.data;
         this._addEventInternal = this._addEventInternal.bind(this);
         this._deleteEventInternal = this._deleteEventInternal.bind(this);
         this.addEventToCalendar = this.addEventToCalendar.bind(this);
@@ -283,7 +284,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Talk);
+export default connect(mapStateToProps, mapDispatchToProps)(Talk);
