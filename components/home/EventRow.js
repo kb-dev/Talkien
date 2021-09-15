@@ -19,6 +19,7 @@ export default class EventRow extends React.PureComponent {
         startDate: PropTypes.string,
         endDate: PropTypes.string,
         openEvent: PropTypes.func,
+        online: PropTypes.bool,
     };
 
     constructor(props) {
@@ -35,11 +36,11 @@ export default class EventRow extends React.PureComponent {
     }
 
     render() {
-        const { topics, name, colors, id } = this.props;
+        const { topics, name, colors, id, online } = this.props;
         let { startDate, endDate } = this.props;
 
         if (id === null) {
-            return <View style={{ height: 60 }}/>;
+            return <View style={{ height: 60 }} />;
         }
 
         startDate = moment(startDate);
@@ -56,12 +57,21 @@ export default class EventRow extends React.PureComponent {
                 <View style={style.EventRow.view}>
                     <View style={style.EventRow.nameView}>
                         <Text style={[style.EventRow.nameText, { color: colors[0] }]}>{name}</Text>
-                        <LinearGradient colors={colors} start={[0, 0]} end={[1, 0]} style={style.EventRow.gradient}/>
+                        <LinearGradient colors={colors} start={[0, 0]} end={[1, 0]} style={style.EventRow.gradient} />
                     </View>
                     <Text style={style.EventRow.topics} ellipsizeMode={'tail'} numberOfLines={2}>
                         {topics.join(', ')}
                     </Text>
                     <Text style={style.EventRow.date}>{date}</Text>
+                    {online === true ? (
+                        <View style={style.EventRow.tagView}>
+                            <LinearGradient colors={['#E049A6', '#7669C0']} start={[0, 0]} end={[1, 0]}>
+                                <Text style={style.EventRow.tag}>{'online'}</Text>
+                            </LinearGradient>
+                        </View>
+                    ) : (
+                        <></>
+                    )}
                 </View>
             </TouchableHighlight>
         );

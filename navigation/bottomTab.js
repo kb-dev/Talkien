@@ -53,8 +53,8 @@ export default class BottomTab extends React.Component {
         if (Platform.isPad) {
             specificStyle = {
                 paddingHorizontal: 12,
-                maxHeight: 70,
-                bottom: 0,
+                maxHeight: 90,
+                bottom: 5,
             };
         }
 
