@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, FlatList, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, TextInput, TouchableHighlight, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import * as Calendar from 'expo-calendar';
@@ -26,6 +26,8 @@ export default class Home extends React.Component {
             calendars: null,
             refreshing: false,
             searching: false,
+            colorId: { color: 0 },
+            clear: false,
         };
 
         this.refreshList = this.refreshList.bind(this);
@@ -36,6 +38,7 @@ export default class Home extends React.Component {
     async componentDidMount() {
         await Calendar.getCalendarPermissionsAsync();
         await this.fetchList();
+        await this.setState({ colorId: 1 });
     }
 
     async getCache() {
@@ -89,14 +92,32 @@ export default class Home extends React.Component {
         navigate('Event', { data });
     }
 
+    changeColor() {
+        if (!this.state.selected) {
+            this.setState({ selected: true, backgroundColor: 'red', backgroundColor2: 'black' });
+        } else {
+            this.setState({ slected: false, backgroundColor: 'black', backgroundColor2: 'red' });
+        }
+    }
+
     onSearch(input) {
+        const dateNow = moment();
         if (input === '') {
             this.setState({ list: this.state.originalList, searching: false });
+        } else if (this.state.colorId === 1) {
+            this.setState({ list: this.state.originalList, searching: false });
+            const regex = new RegExp(input, 'gi');
+            const list = this.state.rawList
+                .filter((event) => {
+                    return moment(event.startDate).isAfter(dateNow) ? event.name.match(regex) : '';
+                })
+                .sort((eventA, eventB) => compareDate(eventA.startDate, eventB.startDate, -1));
+            this.setState({ list, searching: true });
         } else {
             const regex = new RegExp(input, 'gi');
             const list = this.state.rawList
                 .filter((event) => {
-                    return event.name.match(regex);
+                    return moment(event.startDate).isBefore(dateNow) ? event.name.match(regex) : '';
                 })
                 .sort((eventA, eventB) => compareDate(eventA.startDate, eventB.startDate, -1));
             this.setState({ list, searching: true });
@@ -107,6 +128,18 @@ export default class Home extends React.Component {
         this.setState({ refreshing: true });
         await this.fetchList();
     }
+
+    _upcomingEvents = () => {
+        this.setState({ colorId: 1, clear: true }, () => {
+            this.onSearch();
+        });
+    };
+
+    _previousEvents = () => {
+        this.setState({ colorId: 2, clear: true }, () => {
+            this.onSearch();
+        });
+    };
 
     render() {
         const { list, cacheDate, searching, refreshing } = this.state;
@@ -145,6 +178,7 @@ export default class Home extends React.Component {
                             startDate={item.startDate}
                             endDate={item.endDate}
                             colors={item.colors}
+                            online={item.online}
                             data={item}
                             openEvent={this.openEvent}
                         />
@@ -166,6 +200,24 @@ export default class Home extends React.Component {
                 <View style={style.Home.titleView}>
                     <Text style={style.Home.titleText}>Quel évènement cherchez-vous ?</Text>
                 </View>
+                <View style={style.SearchSelector.view}>
+                    <TouchableHighlight
+                        underlayColor={'none'}
+                        onPress={this._upcomingEvents}
+                        style={this.state.colorId === 1 ? style.SearchSelector.activedLeftButton : style.SearchSelector.leftButton}>
+                        <View>
+                            <Text style={style.SearchSelector.text}>{'À venir'}</Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        underlayColor={'none'}
+                        onPress={this._previousEvents}
+                        style={this.state.colorId === 2 ? style.SearchSelector.activedRightButton : style.SearchSelector.rightButton}>
+                        <View>
+                            <Text style={style.SearchSelector.text}>{'Archivé'}</Text>
+                        </View>
+                    </TouchableHighlight>
+                </View>
                 <View style={style.Home.searchView}>
                     <TextInput
                         style={style.Home.searchInput}
@@ -178,6 +230,7 @@ export default class Home extends React.Component {
                         placeholder={'Exemple : DevFest Lille'}
                         placeholderTextColor={'#d8d8d8'}
                         onChangeText={this.onSearch}
+                        clearTextOnFocus={this.state.clear}
                     />
                 </View>
                 <View style={style.Home.eventsTitleView}>{title}</View>

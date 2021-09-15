@@ -94,7 +94,7 @@ const Home = StyleSheet.create({
     view: {
         flex: 1,
         paddingHorizontal: 20,
-        marginBottom: 70,
+        marginBottom: 76,
     },
     titleView: {
         marginTop: 60,
@@ -127,6 +127,7 @@ const Home = StyleSheet.create({
         fontSize: 18,
         color: Theme.colors.font,
     },
+    button: {},
 });
 
 const EventRow = StyleSheet.create({
@@ -161,7 +162,25 @@ const EventRow = StyleSheet.create({
         ...Theme.font.light,
         fontSize: 14,
         color: Theme.colors.font,
-        paddingTop: 8,
+        marginBottom: 8,
+    },
+    tagView: {
+        display: 'flex',
+        textAlign: 'center',
+        justifyContent: 'center',
+        width: 57,
+        borderBottomLeftRadius: 25,
+        borderBottomRightRadius: 10,
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 10,
+        overflow: 'hidden',
+    },
+    tag: {
+        color: Theme.colors.font,
+        paddingLeft: 8,
+        paddingRight: 8,
+        paddingTop: 2,
+        paddingBottom: 2,
     },
 });
 
@@ -178,6 +197,53 @@ const BackButton = StyleSheet.create({
         paddingLeft: 12,
         fontSize: 22,
         color: Theme.colors.font,
+    },
+});
+
+const SearchSelector = StyleSheet.create({
+    view: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingBottom: 15,
+    },
+    leftButton: {
+        backgroundColor: 'rgba(0,0,0,0.25)',
+        borderTopLeftRadius: 8,
+        borderBottomLeftRadius: 8,
+        paddingLeft: 30,
+        paddingRight: 30,
+    },
+    activedLeftButton: {
+        backgroundColor: '#E049A6',
+        borderTopLeftRadius: 8,
+        borderBottomLeftRadius: 8,
+        paddingLeft: 30,
+        paddingRight: 30,
+    },
+    rightButton: {
+        backgroundColor: 'rgba(0,0,0,0.25)',
+        borderTopRightRadius: 8,
+        borderBottomRightRadius: 8,
+        paddingRight: 30,
+        paddingLeft: 30,
+    },
+    activedRightButton: {
+        backgroundColor: '#E049A6',
+        borderTopRightRadius: 8,
+        borderBottomRightRadius: 8,
+        paddingRight: 30,
+        paddingLeft: 30,
+    },
+    text: {
+        padding: 8,
+        fontSize: 18,
+        color: Theme.colors.font,
+    },
+    selectedButtonText: {
+        padding: 8,
+        fontSize: 18,
+        color: Palette.darkBlue,
     },
 });
 
@@ -264,9 +330,12 @@ const Event = StyleSheet.create({
         marginBottom: 76,
     },
     titleView: {
+        display: 'flex',
+        flexDirection: 'row',
         paddingTop: 16,
         paddingBottom: 16,
-        paddingHorizontal: 20,
+        paddingLeft: 20,
+        paddingRight: 10,
     },
     title: {
         ...Theme.font.light,
@@ -305,6 +374,26 @@ const Event = StyleSheet.create({
     },
     fullAddress: {
         ...Theme.font.light,
+    },
+    tagView: {
+        display: 'flex',
+        justifyContent: 'center',
+        marginLeft: 10,
+        marginTop: 28,
+        overflow: 'hidden',
+        height: 26,
+        borderBottomLeftRadius: 50,
+        borderBottomRightRadius: 50,
+        borderTopLeftRadius: 50,
+        borderTopRightRadius: 50,
+    },
+    tag: {
+        color: Theme.colors.font,
+        paddingLeft: 8,
+        paddingRight: 8,
+        paddingTop: 2,
+        paddingBottom: 2,
+        fontSize: 18,
     },
 });
 
@@ -354,5 +443,6 @@ export default {
     Gradient,
     ActivityIndicator,
     NavBar,
+    SearchSelector,
     TalkRow,
 };
