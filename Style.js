@@ -335,7 +335,7 @@ const Event = StyleSheet.create({
         paddingTop: 16,
         paddingBottom: 16,
         paddingLeft: 20,
-        paddingRight: 10
+        paddingRight: 10,
     },
     title: {
         ...Theme.font.light,

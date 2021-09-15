@@ -66,7 +66,7 @@ export default class EventRow extends React.PureComponent {
                     {online === true ? (
                         <View style={style.EventRow.tagView}>
                             <LinearGradient colors={['#E049A6', '#7669C0']} start={[0, 0]} end={[1, 0]}>
-                                <Text style={style.EventRow.tag}>{'online'}</Text>
+                                <Text style={style.EventRow.tag}>{'Online'}</Text>
                             </LinearGradient>
                         </View>
                     ) : (

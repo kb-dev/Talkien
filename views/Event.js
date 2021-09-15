@@ -120,14 +120,14 @@ export default class Event extends React.PureComponent {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
                     <BackButton backAction={this.props.navigation.goBack} title={'Recherche'} />
                 </View>
-                <View style={{display: 'flex', flexDirection: 'row'}}>
+                <View style={{ display: 'flex', flexDirection: 'row' }}>
                     <View style={style.Event.titleView}>
                         <Text style={style.Event.title}>{name}</Text>
                     </View>
                     {online === true ? (
                         <View style={style.Event.tagView}>
                             <LinearGradient colors={['#E54646', '#7669C0']} start={[0, 0]} end={[1, 0]}>
-                                <Text style={style.Event.tag}>{'online'}</Text>
+                                <Text style={style.Event.tag}>{'Online'}</Text>
                             </LinearGradient>
                         </View>
                     ) : (
